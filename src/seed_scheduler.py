@@ -30,7 +30,6 @@ def select_old(fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
-    print('种子选择策略：OLD')
     # 基于当前fuzz的seed项，返回这个项所处的队列的下一项
     if fuzz.current_seed is None:
         return fuzz.seed_queue[0]
@@ -50,7 +49,6 @@ def select_coverage(fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
-    print('种子选择策略：COVERAGE')
     # 如果存在产生新覆盖的种子，则优先选择
     if len(fuzz.new_seed_queue) > 0:
         # 选择新发现的种子
@@ -69,8 +67,9 @@ def select_coverage(fuzz):
             fuzz.total_score = sum(seed_entry.perf_score for seed_entry in fuzz.seed_queue)
             fuzz.queue_changed = False
 
-        # 计算每个种子的概率
-        fuzz.select_probabilities = [seed_entry.perf_score / fuzz.total_score for seed_entry in fuzz.seed_queue]
+            # 计算每个种子的概率
+            fuzz.select_probabilities = [seed_entry.perf_score / fuzz.total_score for seed_entry in fuzz.seed_queue]
+
         # 随机产生一个0到1之间的随机数，并用这个随机数选择种子
         random_num = random.random()
         # 计算累积概率
@@ -92,6 +91,8 @@ def finished_one_cycle(fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
+    if fuzz.cycle_times == 0:
+        return True
     if fuzz.strategy == 'COVERAGE':
         return fuzz.fuzz_times_in_cycle == len(fuzz.seed_queue)  # 如果当前fuzz次数等于种子队列长度，则完成了一次调度循环
     elif fuzz.strategy == 'OLD':
@@ -116,8 +117,9 @@ def start_new_fuzz_cycle(fuzz):
         fuzz.no_new_coverage_cycle_times += 1  # 增加没有新发现的循环次数
     else:
         fuzz.no_new_coverage_cycle_times = 0  # 重置没有新发现的循环次数为0
-        fuzz.prev_queue_size = len(fuzz.seed_queue)  # 更新上一次的队列元素个数
         fuzz.last_cycle_finds_count = 0  # 重置上一次发现的新种子数量为0
+    fuzz.prev_queue_size = len(fuzz.seed_queue)  # 更新上一次循环结束时的队列元素个数
+
 
     # 根据当前没有发现新覆盖率的循环次数决定是否开启
     fuzz.exploration_mode = start_exploration_mode(fuzz)  # 根据条件决定是否开启探索模式

@@ -10,6 +10,7 @@ def show_stats(fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
+    print("输出状态")
     # TODO
 
 

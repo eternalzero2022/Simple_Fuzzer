@@ -11,4 +11,10 @@ def fuzz_one(fuzz):
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
     # TODO
-    return False
+    # if random.random() < 0.5:
+    #     fuzz.add_seed(SeedEntry(fuzz.current_seed.seed, 0, 0))
+    #     print('添加种子')
+    #     return True
+    # else:
+    #     print('未添加种子')
+    #     return False

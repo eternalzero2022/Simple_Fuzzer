@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     if args.i is None:
         args.i = input('请输入种子输入目录：')
-
+        # args.i = '../seeds_example'
     if args.o is None:
         args.o = input('请输入执行结果输出目录：')
 
@@ -48,11 +48,6 @@ if __name__ == '__main__':
 
     if args.s is None:
         args.s = 'COVERAGE'
-
-    # print(args.i)
-    # print(args.o)
-    # print(args.cmd)
-    # print(args.s)
 
     # 定义并初始化Fuzz实例
     fuzz = Fuzz(args.i, args.o, args.cmd, args.s)
@@ -88,7 +83,7 @@ if __name__ == '__main__':
         fuzz_succeed = False
 
         # 每次当当前种子被跳过，且当前种子还存在时，就会进入循环
-        while (not fuzz_succeed) and fuzz.current_seed is not None and Fuzz.stop_fuzzing is False:
+        while True:
             # 选择种子
             fuzz.current_seed = select_next_seed(fuzz)
             if fuzz.current_seed is None:
@@ -111,6 +106,10 @@ if __name__ == '__main__':
                 c_seed.timeout_count += fuzz.last_fuzz_timeout_count
             else:
                 c_seed.skipped_times += 1
+
+            if fuzz_succeed or fuzz.current_seed is None or Fuzz.stop_fuzzing:
+                # 如果变异成功或者当前种子为None或者接收到停止指令，就退出循环
+                break
 
         # 根据时间间隔输出日志信息
         current_time = time.time()

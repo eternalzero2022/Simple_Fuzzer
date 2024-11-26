@@ -26,7 +26,7 @@ class Fuzz:
         self.fuzz_times_in_cycle = 0  # 当前队列循环内的fuzz次数
         self.cycle_times = 0  # 队列的循环次数
         self.no_new_coverage_cycle_times = 0  # 没有新的覆盖率的循环次数
-        self.prev_queue_size = 0  # 上一次队列大小
+        self.prev_queue_size = 0  # 上一次循环结束时的队列大小
         self.exploration_mode = True  # 探索模式标志，在覆盖率较低以及长时间没有新的覆盖率时开启。这个属性具体使不使用就看变异模块了
         self.new_seed_queue = []  # 新发现的种子队列，存储的内容均是包含在seed_queue中的内容，不允许在发现新种子时只添加进该队列而不添加进seed_queue中。由变异模块负责添加，由种子选择模块负责删除。
         self.last_fuzz_finds_count = 0  # 上一次fuzz发现的新种子数量
@@ -79,12 +79,16 @@ class SeedEntry:
     种子队列项，包含种子和深度等属性
     """
 
+    id = 0
+
     def __init__(self, seed, depth, handicap=0):
         """
         种子队列项初始化
         :param seed: 初始输入
         :param depth:
         """
+        self.id = SeedEntry.id
+        SeedEntry.id += 1
         self.seed = seed
         self.depth = depth
         self.has_fuzzed = False
