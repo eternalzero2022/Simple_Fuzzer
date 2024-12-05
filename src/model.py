@@ -41,6 +41,7 @@ class Fuzz:
         self.queue_changed = False  # 队列是否发生变化的标志，在COVERAGE策略下使用，用于判断是否需要重新计算性能分数
         self.select_probabilities = []  # 种子选择概率列表，在COVERAGE策略下使用，用于根据种子的性能分数计算概率
         self.total_score = 0  # 总分数，在COVERAGE策略下使用，用于计算总分数
+        self.seed_info = {}
 
     stop_fuzzing = False  # 停止fuzzing标志
 

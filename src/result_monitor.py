@@ -1,9 +1,8 @@
 # 执行结果监控组件
-from model import Fuzz
+from model import Fuzz, SeedEntry
 from fuzzconstants import FuzzConstants
 
 import os
-import matplotlib.pyplot as plt
 import json
 
 
@@ -32,45 +31,6 @@ def show_stats(fuzz):
     print(f"当前没有发现新覆盖率的循环次数: {fuzz.no_new_coverage_cycle_times}")
     print(f"当前探索模式: {fuzz.exploration_mode}")
     print("===================")
-
-
-def save_coverage_plot(fuzz):
-    """
-    读取数据fuzz.out_dir的json文件并生成覆盖率曲线图
-    :param fuzz: Fuzz实例
-    :return: 无
-    """
-    # 获取文件夹中的所有json文件
-    filepath = fuzz.out_dir
-    all_files = [f for f in os.listdir(filepath) if f.endswith(".json")]
-
-    cycle_times = []
-    avg_bitmap_sizes = []
-
-    # 读取所有json文件
-    for file in all_files:
-        with open(os.path.join(filepath, file), "r") as f:
-            data = json.load(f)
-            # 计算平均位图大小,只存储有效值
-            if data["execution_entry_count"] > 0:
-                avg_bitmap_size = data["total_bitmap_size"] / data["execution_entry_count"]
-                avg_bitmap_sizes.append(avg_bitmap_size)
-                cycle_times.append(data["cycle_times"])
-
-    # 绘制覆盖率曲线
-    plt.figure(figsize=(10, 6))
-    plt.plot(cycle_times, avg_bitmap_sizes, label="Average Bitmap Size", color='blue', marker='o')
-
-    # 添加标题和标签
-    plt.title("Average Bitmap Size vs Cycle Times")
-    plt.xlabel("Cycle Times")
-    plt.ylabel("Average Bitmap Size")
-    plt.legend()
-
-    # 保存图表
-    plot_file = os.path.join(filepath, "coverage_plot.png")
-    plt.savefig(plot_file)
-    plt.close()
 
 
 def save_data(fuzz):
@@ -107,3 +67,33 @@ def save_data(fuzz):
     with open(os.path.join(filepath, datafile_name), "w") as f:
         json.dump(stats_data, f, indent=4)
 
+def save_seed_info(fuzz):
+    """
+    保存当前fuzz中所有种子的基本信息到内存中，确保每个种子的id唯一。
+    :param fuzz: Fuzz实例
+    :return: 无
+    """
+    if not isinstance(fuzz, Fuzz):
+        raise TypeError('fuzz必须是Fuzz类型')
+
+    # 创建一个字典来保存种子信息，key为种子的id，value为种子信息
+    if not hasattr(fuzz, "seed_info"):
+        fuzz.seed_info = {}
+
+    # 遍历fuzz的种子队列并保存信息
+    for seed in fuzz.seed_queue:
+        if isinstance(seed, SeedEntry):
+            # 如果种子信息已存在，则跳过
+            if seed.id not in fuzz.seed_info:
+                seed_info = {
+                    "seed_id": seed.id,
+                    "seed": seed.seed,
+                    "depth": seed.depth,
+                    "handicap": seed.handicap,
+                    "bitmap_size": seed.bitmap_size,
+                    "execution_time": seed.execution_time,
+                    "score": seed.perf_score,  # 如果需要性能得分
+                }
+                fuzz.seed_info[seed.id] = seed_info
+
+    print(f"种子信息已保存，当前共有 {len(fuzz.seed_info)} 个唯一种子")
