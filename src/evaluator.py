@@ -33,20 +33,41 @@ def save_coverage_plot(fuzz):
                 avg_bitmap_sizes.append(avg_bitmap_size)
                 cycle_times.append(data["cycle_times"])
 
+    # 如果没有数据，提前返回
+    if not cycle_times:
+        print("没有有效的数据可用于绘制图表。")
+        return
+
+    # 创建渐变色
+    cmap = plt.get_cmap("Spectral")  # 使用漂亮的渐变色
+    norm = plt.Normalize(vmin=min(cycle_times), vmax=max(cycle_times))
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+
     # 绘制覆盖率曲线
     plt.figure(figsize=(10, 6))
-    plt.plot(cycle_times, avg_bitmap_sizes, label="Average Bitmap Size", color='blue', marker='o')
+
+    # 创建渐变色线条
+    for i in range(len(cycle_times) - 1):
+        plt.plot(cycle_times[i:i + 2], avg_bitmap_sizes[i:i + 2], color=cmap(norm(cycle_times[i])), lw=2)
+
+    # 添加渐变色条
+    plt.colorbar(sm, label="Cycle Times")
 
     # 添加标题和标签
-    plt.title("Average Bitmap Size vs Cycle Times")
-    plt.xlabel("Cycle Times")
-    plt.ylabel("Average Bitmap Size")
-    plt.legend()
+    plt.title("Average Bitmap Size vs Cycle Times", fontsize=16)
+    plt.xlabel("Cycle Times", fontsize=12)
+    plt.ylabel("Average Bitmap Size", fontsize=12)
+
+    # 额外的图表美化
+    plt.grid(True, linestyle='--', alpha=0.5)  # 增加虚线网格
+    plt.tight_layout()
 
     # 保存图表
     plot_file = os.path.join(filepath, "coverage_plot.png")
     plt.savefig(plot_file)
     plt.close()
+    print(f"覆盖率图已保存到 {plot_file}")
 
 
 def display_json_stats(fuzz):
