@@ -88,6 +88,7 @@ class SeedEntry:
         :param seed: 初始输入
         :param depth:
         """
+        self.file_path = None
         self.id = SeedEntry.id
         SeedEntry.id += 1
         self.seed = seed
