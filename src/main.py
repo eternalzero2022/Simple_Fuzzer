@@ -36,6 +36,9 @@ if __name__ == '__main__':
 
     if args.i is None:
         args.i = input('请输入种子输入目录：')
+
+
+
         # args.i = '../seeds_example'
     if args.o is None:
         args.o = input('请输入执行结果输出目录：')
