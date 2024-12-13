@@ -2,9 +2,14 @@
 
 
 # 默认值
-in ?= ""
+# in ?= ""
+# out ?= /fuzz_output
+# cmd ?= ""
+# stg ?= COVERAGE
+
+in ?= "seeds_example"
 out ?= /fuzz_output
-cmd ?= ""
+cmd ?= "program/calculator"
 stg ?= COVERAGE
 
 
