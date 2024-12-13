@@ -80,12 +80,13 @@ def perform_dry_run(fuzz):
             shm.detach()
 
 
-def perform_dry_run1(fuzz):
-
+def execute_seed(seed, fuzz):
     """
-    先将当前种子队列中的所有种子执行一遍，更新种子队列中的信息以及fuzz统计信息，主要是更新每个种子的执行时间和覆盖位图大小
+    将seed作为种子，输入执行，更新种子的执行时间、覆盖率等信息，以及fuzz整体的total_bitmap_size，bitmap_entry_count和total_execution_time，execution_entry_count。
+    需要在覆盖率数据发生更新时调用执行结果监控组件的函数保存数据
+    :param seed: 表示种子的比特串，并不是SeedEntry
     :param fuzz: Fuzz实例
-    :return: 无
+    :return: 一个dictionary，包含new_coverage, crash和timeout三个键，如果种子具备对应特性就将其设为true，否则为false
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
