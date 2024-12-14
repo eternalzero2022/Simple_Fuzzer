@@ -14,3 +14,4 @@ class FuzzConstants:
     data_file_count = 0
 
     shm_env_var = "__AFL_SHM_ID"
+    shm_size = 256*256

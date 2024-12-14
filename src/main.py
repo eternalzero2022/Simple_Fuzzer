@@ -9,6 +9,7 @@ from seed_scheduler import select_next_seed, finished_one_cycle, start_new_fuzz_
 from mutator import fuzz_one
 from result_monitor import show_stats, save_data
 from executor import perform_dry_run
+from evaluator import save_coverage_plot
 
 
 def signal_hanlder(signum, frame):
@@ -70,6 +71,13 @@ if __name__ == '__main__':
     print('即将进行模糊测试')
     time.sleep(1)
 
+    # 记录模糊开始时候的时间
+    fuzz.program_start_time = time.time()
+    fuzz.program_run_time = 0;
+
+    # 最开始的时候执行一次保存工作
+    save_data(fuzz)
+
     # 获取当前时间，将其转化为整数
     current_time = time.time()
     start_time = int(current_time)
@@ -116,11 +124,14 @@ if __name__ == '__main__':
 
         # 根据时间间隔输出日志信息
         current_time = time.time()
+        fuzz.program_run_time = current_time - fuzz.program_start_time
+
         if current_time >= int(last_time)+1:
             show_stats(fuzz)
             last_time = int(current_time)
 
     print('即将进行模糊测试结束工作')
     save_data(fuzz)
+    save_coverage_plot(fuzz)
     exit(0)
 

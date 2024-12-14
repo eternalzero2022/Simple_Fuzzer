@@ -2,7 +2,8 @@
 import random
 
 from model import Fuzz, SeedEntry
-from src.power_scheduler import calculate_score
+from power_scheduler import calculate_score
+from executor import execute_seed
 
 
 def fuzz_one(fuzz):
@@ -34,14 +35,14 @@ def fuzz_one(fuzz):
         # 选择变异方法并执行变异
         mutation_type = random.choice(["bitflip", "arith", "interest", "havoc"])
         mutated_seed = mutate(original_seed, mutation_type, fuzz)
+        new_seed = SeedEntry(mutated_seed, depth + 1, fuzz.cycle_times)
 
         # 模拟调用执行组件
-        exec_result = execute_seed(mutated_seed)
+        exec_result = execute_seed(new_seed)
 
         if exec_result["new_coverage"]:
             # 如果有新的覆盖率，创建新种子项并添加到队列创建的新种子队列项
             found_new_seed = True
-            new_seed = SeedEntry(mutated_seed, depth + 1, fuzz.cycle_times)
             fuzz.add_seed(new_seed)
             fuzz.last_fuzz_finds_count += 1
 
@@ -56,11 +57,11 @@ def fuzz_one(fuzz):
     # 如果没有发现新覆盖，作为最后手段执行 splice 变异
     if not found_new_seed:
         mutated_seed = mutate(original_seed, "splice", fuzz)
-        exec_result = execute_seed(mutated_seed, fuzz)
+        new_seed = SeedEntry(mutated_seed, depth + 1, fuzz.cycle_times)
+        exec_result = execute_seed(new_seed, fuzz)
 
         if exec_result["new_coverage"]:
             found_new_seed = True
-            new_seed = SeedEntry(mutated_seed, depth + 1, fuzz.cycle_times)
             fuzz.add_seed(new_seed)
             fuzz.last_fuzz_finds_count += 1
 
@@ -111,31 +112,31 @@ def decide_mutation_count(score):
     return max(base_mutation_count, min(mutation_count, max_mutation_count))
 
 
-def execute_seed(seed, fuzz):
-    """
-    模拟种子执行并返回执行结果。
-    :param seed: 执行的种子
-    :return: 执行结果字典
-    """
-    # 调用执行组件执行种子
-    execution_time = random.uniform(0.01, 1.0)  # 模拟执行时间
-    bitmap_size = random.randint(10, 100)  # 模拟覆盖率位图大小
-    new_coverage = random.choice([True, False])
-    crash = random.choice([True, False])
-    timeout = random.choice([True, False])
+# def execute_seed(seed, fuzz):
+#     """
+#     模拟种子执行并返回执行结果。
+#     :param seed: 执行的种子
+#     :return: 执行结果字典
+#     """
+#     # 调用执行组件执行种子
+#     execution_time = random.uniform(0.01, 1.0)  # 模拟执行时间
+#     bitmap_size = random.randint(10, 100)  # 模拟覆盖率位图大小
+#     new_coverage = random.choice([True, False])
+#     crash = random.choice([True, False])
+#     timeout = random.choice([True, False])
 
-    # 更新Fuzz统计信息
-    fuzz.total_bitmap_size += bitmap_size
-    fuzz.bitmap_entry_count += 1
-    fuzz.total_execution_time += execution_time
-    fuzz.execution_entry_count += 1
+#     # 更新Fuzz统计信息
+#     fuzz.total_bitmap_size += bitmap_size
+#     fuzz.bitmap_entry_count += 1
+#     fuzz.total_execution_time += execution_time
+#     fuzz.execution_entry_count += 1
 
-    # 返回模拟的执行结果
-    return {
-        "new_coverage": new_coverage,
-        "crash": crash,
-        "timeout": timeout,
-    }
+#     # 返回模拟的执行结果
+#     return {
+#         "new_coverage": new_coverage,
+#         "crash": crash,
+#         "timeout": timeout,
+#     }
 
 
 # # 具体的变异方法（示例与之前类似）

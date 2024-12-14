@@ -1,6 +1,7 @@
 # 数据结构定义组件
 import os
 from abc import ABC, abstractmethod
+from fuzzconstants import FuzzConstants
 
 
 class Fuzz:
@@ -33,6 +34,8 @@ class Fuzz:
         self.last_fuzz_crash_count = 0  # 上一次fuzz发现的新崩溃数量
         self.last_fuzz_timeout_count = 0  # 上一次fuzz发现的新超时数量
         self.last_cycle_finds_count = 0  # 上一次循环发现的新种子数量
+        self.bitmap = bytes(FuzzConstants.shm_size)  # 覆盖率位图，其中的每一个字节都表示一条路径，如果这个字节大于0则说明这条路径被执行过
+        self.bitmap_size = 0  # 覆盖率位图中大于0的字节的数量
         self.total_bitmap_size = 0  # 总位图大小
         self.bitmap_entry_count = 0  # 计算过位图的种子项的数量
         self.total_execution_time = 0  # 总执行时间
@@ -42,6 +45,8 @@ class Fuzz:
         self.select_probabilities = []  # 种子选择概率列表，在COVERAGE策略下使用，用于根据种子的性能分数计算概率
         self.total_score = 0  # 总分数，在COVERAGE策略下使用，用于计算总分数
         self.seed_info = {}
+        self.program_start_time = 0; # 程序开始执行的绝对时间
+        self.program_run_time = 0; # 程序从开始执行到现在的执行时间，从进入fuzz循环时开始
 
     stop_fuzzing = False  # 停止fuzzing标志
 
