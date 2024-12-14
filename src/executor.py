@@ -90,4 +90,69 @@ def execute_seed(seed, fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
-    # TODO
+
+    # 创建共享内存
+    key = 5678
+    shm_size = 256 * 256
+    shm = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT, size=shm_size)
+    shm_id = shm.id
+
+    # 将共享内存区域置为0
+    empty_data = b'\x00' * shm_size
+    shm.write(empty_data)
+
+    # 设置环境变量，目标程序会读取这个环境变量来获取共享内存地址
+    os.environ[FuzzConstants.shm_env_var] = str(shm_id)
+
+    # 初始化结果字典
+    result_dict = {"new_coverage": False, "crash": False, "timeout": False}
+
+    try:
+        # 构建执行命令
+        cmd = fuzz.exec_command
+
+        start_time = time.time()
+
+        # 执行目标程序，捕获输出和错误
+        process = subprocess.run(cmd, shell=True, input=seed, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                 timeout=FuzzConstants.exec_timeout)
+
+        end_time = time.time()
+
+        # 计算执行时间
+        exec_time = end_time - start_time
+        fuzz.total_execution_time += exec_time
+        fuzz.execution_entry_count += 1
+
+        if process.returncode == 0:
+            # 假设目标程序会在共享内存中存储覆盖率信息
+            message = shm.read()
+            coverage_data = message[:shm_size]
+
+            # 计算覆盖率
+            coverage_size = sum(1 for byte in coverage_data if byte > 0)
+            if coverage_size > 0:
+                result_dict["new_coverage"] = True
+                fuzz.total_bitmap_size += coverage_size
+                fuzz.bitmap_entry_count += 1
+
+            print(f"种子执行成功，时间：{exec_time:.2f}s，覆盖率大小：{coverage_size}")
+
+        else:
+            # 记录崩溃
+            result_dict["crash"] = True
+            print(f"种子执行失败，错误码：{process.returncode}")
+
+    except subprocess.TimeoutExpired:
+        result_dict["timeout"] = True
+        print(f"种子执行超时")
+
+    except Exception as e:
+        result_dict["crash"] = True
+        print(f"执行种子时发生错误: {str(e)}")
+
+    finally:
+        # 关闭共享内存
+        shm.detach()
+
+    return result_dict
