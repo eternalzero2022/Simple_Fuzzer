@@ -4,6 +4,7 @@ import random
 from model import Fuzz, SeedEntry
 from power_scheduler import calculate_score
 from executor import execute_seed
+from result_monitor import save_data, save_crash_seed, save_timeout_seed
 
 
 def fuzz_one(fuzz):
@@ -38,21 +39,26 @@ def fuzz_one(fuzz):
         new_seed = SeedEntry(mutated_seed, depth + 1, fuzz.cycle_times)
 
         # 模拟调用执行组件
-        exec_result = execute_seed(new_seed)
+        exec_result = execute_seed(new_seed,fuzz)
 
         if exec_result["new_coverage"]:
             # 如果有新的覆盖率，创建新种子项并添加到队列创建的新种子队列项
             found_new_seed = True
             fuzz.add_seed(new_seed)
             fuzz.last_fuzz_finds_count += 1
+            save_data(fuzz)
 
         if exec_result["crash"]:
             # 增加崩溃计数
             fuzz.last_fuzz_crash_count += 1
+            fuzz.total_crash_count += 1
+            save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             # 增加超时计数
             fuzz.last_fuzz_timeout_count += 1
+            fuzz.total_timeout_count += 1
+            save_timeout_seed(new_seed,fuzz)
 
     # 如果没有发现新覆盖，作为最后手段执行 splice 变异
     if not found_new_seed:
@@ -64,13 +70,19 @@ def fuzz_one(fuzz):
             found_new_seed = True
             fuzz.add_seed(new_seed)
             fuzz.last_fuzz_finds_count += 1
+            save_data(fuzz)
 
         if exec_result["crash"]:
             fuzz.last_fuzz_crash_count += 1
+            fuzz.total_crash_count += 1
+            save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             fuzz.last_fuzz_timeout_count += 1
+            fuzz.total_timeout_count += 1
+            save_timeout_seed(new_seed,fuzz)
 
+    # print("变异结果：",found_new_seed)
     return found_new_seed
 
 
@@ -194,7 +206,7 @@ def havoc_mutation(seed):
     seed = bytearray(seed)
     for _ in range(random.randint(1, 10)):  # 随机叠加 1~10 次变异
         mutation = random.choice([bitflip_mutation, arithmetic_mutation, interest_mutation])
-        seed = mutation(seed)
+        seed = bytearray(mutation(seed))
         if random.random() < 0.2:  # 随机删除块
             start = random.randint(0, len(seed))
             end = random.randint(start, len(seed))
@@ -211,7 +223,10 @@ def splice_mutation(seed, seed_queue):
     if not seed_queue:
         return seed
     seed = bytearray(seed)
-    other_seed = random.choice(seed_queue)
+    other_seedEntry = random.choice(seed_queue)
+    if not isinstance(other_seedEntry,SeedEntry):
+        raise TypeError("变异失败，种子非SeedEntry类型")
+    other_seed = other_seedEntry.seed
     splice_point = random.randint(0, len(seed))
     other_splice_point = random.randint(0, len(other_seed))
     seed[splice_point:] = other_seed[other_splice_point:]

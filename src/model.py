@@ -10,7 +10,7 @@ class Fuzz:
     必要时可以添加属性和方法。
     """
 
-    def __init__(self, in_dir, out_dir, exec_command, strategy):
+    def __init__(self, in_dir, out_dir, exec_command, strategy, task_name):
         """
         初始化Fuzz类
         :param in_dir: 种子目录
@@ -21,6 +21,7 @@ class Fuzz:
         self.in_dir = in_dir  # 种子目录
         self.out_dir = out_dir  # 结果输出目录
         self.exec_command = exec_command  # 执行命令
+        self.task_name =  task_name  # 任务名称，用于确定结果输出目录的位置
         self.strategy = strategy  # 种子调度策略
         self.seed_queue = []  # 种子队列
         self.current_seed = None  # 当前种子，在每次变异前或每次开始新的队列循环时更新，在变异时可以直接使用
@@ -33,6 +34,8 @@ class Fuzz:
         self.last_fuzz_finds_count = 0  # 上一次fuzz发现的新种子数量
         self.last_fuzz_crash_count = 0  # 上一次fuzz发现的新崩溃数量
         self.last_fuzz_timeout_count = 0  # 上一次fuzz发现的新超时数量
+        self.total_crash_count = 0  # 总共发现的新崩溃数量
+        self.total_timeout_count = 0  # 总共发现的新超时数量
         self.last_cycle_finds_count = 0  # 上一次循环发现的新种子数量
         self.bitmap = bytes(FuzzConstants.shm_size)  # 覆盖率位图，其中的每一个字节都表示一条路径，如果这个字节大于0则说明这条路径被执行过
         self.bitmap_size = 0  # 覆盖率位图中大于0的字节的数量
@@ -47,6 +50,9 @@ class Fuzz:
         self.seed_info = {}
         self.program_start_time = 0; # 程序开始执行的绝对时间
         self.program_run_time = 0; # 程序从开始执行到现在的执行时间，从进入fuzz循环时开始
+        self.status_show_count = 0;
+        self.exec_called_times = 0; # 调用执行组件总次数
+        
 
     stop_fuzzing = False  # 停止fuzzing标志
 

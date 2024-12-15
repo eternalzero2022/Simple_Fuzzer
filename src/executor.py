@@ -61,28 +61,30 @@ def perform_dry_run(fuzz):
 
                 # 更新覆盖率位图
                 if len(fuzz.bitmap) == len(coverage_data):
-                    fuzz.bitmap = bytes(a & b for a, b in zip(coverage_data, fuzz.bitmap))
+                    fuzz.bitmap = bytes(a | b for a, b in zip(coverage_data, fuzz.bitmap))
                 else:
                     raise ValueError("新种子覆盖率位图与总覆盖率位图长度必须相同")
                 fuzz.bitmap_size = sum(1 for byte in fuzz.bitmap if byte > 0)
+                # print(f"此时的覆盖率位图大小：{fuzz.bitmap_size}")
 
                 coverage_size = sum(1 for byte in coverage_data if byte > 0)
                 seed.bitmap_size = coverage_size
                 fuzz.total_bitmap_size += coverage_size
                 fuzz.bitmap_entry_count += 1
 
-                print(f"种子 {seed.id} 执行成功，时间：{exec_time:.2f}s，覆盖率大小：{coverage_size}")
+                # print(f"种子 {seed.id} 执行成功，时间：{exec_time:.2f}s，覆盖率大小：{coverage_size}")
 
             else:
-                print(f"种子 {seed.id} 执行失败，错误码：{result.returncode}")
+                # print(f"种子 {seed.id} 执行失败，错误码：{result.returncode}")
+                pass
 
         except subprocess.TimeoutExpired:
             seed.timeout_count += 1
-            print(f"种子 {seed.id} 执行超时")
+            # print(f"种子 {seed.id} 执行超时")
 
         except Exception as e:
             seed.crash_count += 1
-            print(f"执行种子 {seed.id} 时出错: {str(e)}")
+            # print(f"执行种子 {seed.id} 时出错: {str(e)}")
 
         finally:
             # 关闭共享内存
@@ -102,6 +104,8 @@ def execute_seed(seed, fuzz):
     
     if not isinstance(seed, SeedEntry):
         raise TypeError('seed必须是SeedEntry类型')
+    
+    fuzz.exec_called_times += 1
 
     # 创建共享内存
     key = 5678
@@ -150,17 +154,20 @@ def execute_seed(seed, fuzz):
             fuzz.total_bitmap_size += coverage_size
             fuzz.bitmap_entry_count += 1
 
-            print(f"种子执行成功，时间：{exec_time:.2f}s，覆盖率大小：{coverage_size}")
+            # print(f"种子执行成功，时间：{exec_time:.2f}s，覆盖率大小：{coverage_size}")
 
             # 更新覆盖率位图
             
             if len(fuzz.bitmap) == len(coverage_data):
-                fuzz.bitmap = bytes(a & b for a, b in zip(coverage_data, fuzz.bitmap))
+                fuzz.bitmap = bytes(a | b for a, b in zip(coverage_data, fuzz.bitmap))
             else:
                 raise ValueError("新种子覆盖率位图与总覆盖率位图长度必须相同")
             
+
+            
             # 判断是否产生了新的覆盖率
             new_bitmap_size = sum(1 for byte in fuzz.bitmap if byte > 0)
+            # print(f"此时的覆盖率位图大小：{new_bitmap_size}")
             if new_bitmap_size > fuzz.bitmap_size:
                 fuzz.bitmap_size = new_bitmap_size
                 result_dict["new_coverage"] = True
@@ -173,15 +180,16 @@ def execute_seed(seed, fuzz):
         else:
             # 记录崩溃
             result_dict["crash"] = True
-            print(f"种子执行失败，错误码：{process.returncode}")
+        
+            # print(f"种子执行失败，错误码：{process.returncode}")
 
     except subprocess.TimeoutExpired:
         result_dict["timeout"] = True
-        print(f"种子执行超时")
+        # print(f"种子执行超时")
 
     except Exception as e:
         result_dict["crash"] = True
-        print(f"执行种子时发生错误: {str(e)}")
+        # print(f"执行种子时发生错误: {str(e)}")
 
     finally:
         # 关闭共享内存

@@ -6,11 +6,13 @@
 # out ?= /fuzz_output
 # cmd ?= ""
 # stg ?= COVERAGE
+# name ?= default
 
 in ?= "seeds_example"
-out ?= /fuzz_output
+out ?= ./fuzz_output
 cmd ?= "program/calculator"
 stg ?= COVERAGE
+name ?= default
 
 
 # 运行命令
@@ -27,6 +29,9 @@ run:
 	fi; \
     if [ "$(stg)" != "" ]; then \
 		CMD="$${CMD} -s $(stg)"; \
+	fi; \
+	if [ "$(name)" != "" ]; then \
+		CMD="$${CMD} -n $(name)"; \
 	fi; \
 	echo "Executing: $$CMD"; \
 	$$CMD
