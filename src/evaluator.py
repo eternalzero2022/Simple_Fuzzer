@@ -108,6 +108,17 @@ def save_coverage_plot(fuzz):
         print("没有有效的数据可用于绘制图表。")
         return
 
+    # 确定横坐标单位
+    max_run_time = max(program_run_times)
+    if max_run_time > 7200:  # 大于120分钟
+        program_run_times = [t / 3600 for t in program_run_times]  # 转换为小时
+        x_label = "Program Run Time (hours)"
+    elif max_run_time > 60:  # 大于600秒
+        program_run_times = [t / 60 for t in program_run_times]  # 转换为分钟
+        x_label = "Program Run Time (minutes)"
+    else:
+        x_label = "Program Run Time (seconds)"
+
     # 创建渐变色
     cmap = plt.get_cmap("Spectral")  # 使用漂亮的渐变色
     norm = plt.Normalize(vmin=min(program_run_times), vmax=max(program_run_times))
@@ -127,7 +138,7 @@ def save_coverage_plot(fuzz):
 
     # 添加标题和标签
     plt.title("Average Bitmap Size vs Program Run Time", fontsize=16)
-    plt.xlabel("Program Run Time(s)", fontsize=12)
+    plt.xlabel(x_label, fontsize=12)  # 使用动态的横坐标标签
     plt.ylabel("Bitmap Size (Edges)", fontsize=12)
 
     # 设置纵坐标的刻度数量
