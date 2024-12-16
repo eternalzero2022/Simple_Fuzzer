@@ -7,6 +7,7 @@ class FuzzConstants:
     exploration_switch_coverage = 0.35  # 如果覆盖率低于n则持续开启探索模式
     cal_score_based_on_handicap = True  # 是否基于handicap计算分数，也就是越先执行到的则越快执行
     same_score = False  # 每一个种子分数是否相同
+    stats_show_interval_sec = 10
 
     exec_timeout = 3
 

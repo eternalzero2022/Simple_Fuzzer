@@ -11,6 +11,7 @@ from src.mutator import fuzz_one
 from src.result_monitor import show_stats, save_data, outdir_init
 from src.executor import perform_dry_run
 from src.evaluator import save_coverage_plot, display_fuzz_config, display_result_info
+from src.fuzzconstants import FuzzConstants
 
 def check_afl_in_binary(file_path):
     try:
@@ -89,7 +90,6 @@ def main(args):
     # absolute_path = os.path.abspath(args.i)
     # args.cmd = args.cmd.replace('@@', absolute_path)
 
-    print("程序启动命令：",args.cmd)
 
     if args.s is None:
         args.s = 'COVERAGE'
@@ -197,7 +197,7 @@ def main(args):
             current_time = time.time()
             fuzz.program_run_time = current_time - fuzz.program_start_time
 
-            if current_time >= int(last_time)+1:
+            if current_time >= int(last_time)+FuzzConstants.stats_show_interval_sec:
                 show_stats(fuzz)
                 last_time = int(current_time)
 
