@@ -5,12 +5,12 @@ import signal
 import time
 import os
 
-from model import Fuzz, SeedEntry
-from seed_scheduler import select_next_seed, finished_one_cycle, start_new_fuzz_cycle
-from mutator import fuzz_one
-from result_monitor import show_stats, save_data, outdir_init
-from executor import perform_dry_run
-from evaluator import save_coverage_plot, display_fuzz_config, display_result_info
+from src.model import Fuzz, SeedEntry
+from src.seed_scheduler import select_next_seed, finished_one_cycle, start_new_fuzz_cycle
+from src.mutator import fuzz_one
+from src.result_monitor import show_stats, save_data, outdir_init
+from src.executor import perform_dry_run
+from src.evaluator import save_coverage_plot, display_fuzz_config, display_result_info
 
 
 def signal_hanlder(signum, frame):
@@ -41,20 +41,21 @@ def unlock_directory(directory):
         os.remove(lock_file)  # 删除锁文件
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+def main(args):
 
     # 注册信号处理函数
     signal.signal(signal.SIGINT, signal_hanlder)
 
-    # 创建解析器
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', type=str, help='种子输入目录')
-    parser.add_argument('-o', type=str, help='执行结果输出目录')
-    parser.add_argument('--cmd', type=str, help='程序执行命令')
-    parser.add_argument('-s', type=str, help='种子调度策略')
-    parser.add_argument('-n', type=str, help='任务名称')
+    # # 创建解析器
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-i', type=str, help='种子输入目录')
+    # parser.add_argument('-o', type=str, help='执行结果输出目录')
+    # parser.add_argument('--cmd', type=str, help='程序执行命令')
+    # parser.add_argument('-s', type=str, help='种子调度策略')
+    # parser.add_argument('-n', type=str, help='任务名称')
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
     if args.i is None:
         args.i = input('请输入种子输入目录：')
@@ -63,13 +64,18 @@ if __name__ == '__main__':
 
         # args.i = '../seeds_example'
     if args.o is None:
-        args.o = input('请输入执行结果输出目录：')
+        # args.o = input('请输入执行结果输出目录：')
+        args.o = "./fuzz_output"
 
     if args.cmd is None:
         args.cmd = input('请输入程序启动命令：')
 
-    # 将args.cmd中所有@@替换为种子输入目录
-    args.cmd = args.cmd.replace('@@', args.i)
+
+    # # 将args.cmd中所有@@替换为种子输入目录
+    # absolute_path = os.path.abspath(args.i)
+    # args.cmd = args.cmd.replace('@@', absolute_path)
+
+    print("程序启动命令：",args.cmd)
 
     if args.s is None:
         args.s = 'COVERAGE'
@@ -107,6 +113,8 @@ if __name__ == '__main__':
         outdir_init(fuzz)
         
         perform_dry_run(fuzz)
+
+        print(f"种子队列长度：",len(fuzz.seed_queue))
 
         print('即将进行模糊测试')
         time.sleep(1)
@@ -170,6 +178,9 @@ if __name__ == '__main__':
             if current_time >= int(last_time)+1:
                 show_stats(fuzz)
                 last_time = int(current_time)
+
+    except Exception as e:
+        print(e)
     finally:
         print('即将进行模糊测试结束工作')
         display_result_info(fuzz)

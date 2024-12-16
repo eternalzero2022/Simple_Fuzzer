@@ -1,6 +1,7 @@
 # 评估组件
-from model import Fuzz
-from fuzzconstants import FuzzConstants
+from src.model import Fuzz
+from src.fuzzconstants import FuzzConstants
+from matplotlib.ticker import MaxNLocator
 
 import os
 import matplotlib.pyplot as plt
@@ -126,8 +127,11 @@ def save_coverage_plot(fuzz):
 
     # 添加标题和标签
     plt.title("Average Bitmap Size vs Program Run Time", fontsize=16)
-    plt.xlabel("Program Run Time", fontsize=12)
+    plt.xlabel("Program Run Time(s)", fontsize=12)
     plt.ylabel("Bitmap Size (Edges)", fontsize=12)
+
+    # 设置纵坐标的刻度数量
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=10))  # 设置最多显示5个刻度
 
     # 额外的图表美化
     plt.grid(True, linestyle='--', alpha=0.5)  # 增加虚线网格

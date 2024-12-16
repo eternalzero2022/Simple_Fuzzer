@@ -1,6 +1,6 @@
 # 能量调度组件
-from model import SeedEntry, Fuzz
-from fuzzconstants import FuzzConstants
+from src.model import SeedEntry, Fuzz
+from src.fuzzconstants import FuzzConstants
 
 
 def calculate_score(entry, fuzz):

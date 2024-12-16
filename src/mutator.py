@@ -1,10 +1,10 @@
 # 变异组件
 import random
 
-from model import Fuzz, SeedEntry
-from power_scheduler import calculate_score
-from executor import execute_seed
-from result_monitor import save_data, save_crash_seed, save_timeout_seed
+from src.model import Fuzz, SeedEntry
+from src.power_scheduler import calculate_score
+from src.executor import execute_seed
+from src.result_monitor import save_data, save_crash_seed, save_timeout_seed
 
 
 def fuzz_one(fuzz):
@@ -52,13 +52,15 @@ def fuzz_one(fuzz):
             # 增加崩溃计数
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            save_crash_seed(new_seed,fuzz)
+            if fuzz.total_crash_count <= 100:
+                save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             # 增加超时计数
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            save_timeout_seed(new_seed,fuzz)
+            if fuzz.total_timeout_count <= 100:
+                save_timeout_seed(new_seed,fuzz)
 
     # 如果没有发现新覆盖，作为最后手段执行 splice 变异
     if not found_new_seed:
@@ -94,15 +96,22 @@ def mutate(seed, mutation_type, fuzz):
     :param fuzz: Fuzz实例（需要访问种子队列或字典）
     :return: 变异后的种子
     """
+    if not isinstance(fuzz, Fuzz):
+        raise TypeError('fuzz必须是Fuzz类型')
     if mutation_type == "bitflip":
+        fuzz.current_mutate_strategy = "bitfilp"
         return bitflip_mutation(seed)
     elif mutation_type == "arith":
+        fuzz.current_mutate_strategy = "arith"
         return arithmetic_mutation(seed)
     elif mutation_type == "interest":
+        fuzz.current_mutate_strategy = "interest"
         return interest_mutation(seed)
     elif mutation_type == "havoc":
+        fuzz.current_mutate_strategy = "havoc"
         return havoc_mutation(seed)
     elif mutation_type == "splice":
+        fuzz.current_mutate_strategy = "splice"
         return splice_mutation(seed, fuzz.seed_queue)
     else:
         raise ValueError(f"未知的变异类型: {mutation_type}")
@@ -152,7 +161,7 @@ def decide_mutation_count(score):
 
 
 # # 具体的变异方法（示例与之前类似）
-def bitflip_mutation(seed, L=1, S=1):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
+def bitflip_mutation(seed, L=8, S=8):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
     """位翻转变异"""
     if not seed:
         return seed

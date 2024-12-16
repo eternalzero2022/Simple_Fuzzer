@@ -1,7 +1,7 @@
 # 数据结构定义组件
 import os
 from abc import ABC, abstractmethod
-from fuzzconstants import FuzzConstants
+from src.fuzzconstants import FuzzConstants
 
 
 class Fuzz:
@@ -52,6 +52,7 @@ class Fuzz:
         self.program_run_time = 0; # 程序从开始执行到现在的执行时间，从进入fuzz循环时开始
         self.status_show_count = 0;
         self.exec_called_times = 0; # 调用执行组件总次数
+        self.current_mutate_strategy = "-" # 当前正在使用的变异策略
         
 
     stop_fuzzing = False  # 停止fuzzing标志
@@ -77,12 +78,21 @@ class Fuzz:
                 try:
                     with open(file_path, 'rb') as f:
                         content = f.read()
-                        seed_entry = SeedEntry(content, 0)
+                        seed_entry = SeedEntry(content, 0, 0, file_path)
                         self.add_seed(seed_entry)
                 except Exception as e:
                     print(f"Error reading file {file_path}: {e}")
                     return False
         return True
+    
+    def remove_seed(self,seed_entry):
+        if not isinstance(seed_entry, SeedEntry):
+            raise TypeError('种子必须是QueueEntry类型')
+        if seed_entry in self.seed_queue:
+            self.seed_queue.remove(seed_entry)
+        if seed_entry in self.new_seed_queue:
+            self.new_seed_queue.remove(seed_entry)
+        self.queue_changed = True
 
 
 # 队列项
@@ -93,7 +103,7 @@ class SeedEntry:
 
     id = 0
 
-    def __init__(self, seed, depth, handicap=0):
+    def __init__(self, seed, depth, handicap=0, file_path=""):
         """
         种子队列项初始化
         :param seed: 初始输入
@@ -114,3 +124,9 @@ class SeedEntry:
         self.bitmap_size = 0
         self.perf_score = 0  # 性能分数
         self.handicap = handicap  #  产生这个种子时当前所处的循环次数，越是晚则越大
+        self.file_path = file_path
+
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value,SeedEntry):
+            return value.id == self.id
+        return False

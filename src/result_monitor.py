@@ -1,6 +1,6 @@
 # 执行结果监控组件
-from model import Fuzz, SeedEntry
-from fuzzconstants import FuzzConstants
+from src.model import Fuzz, SeedEntry
+from src.fuzzconstants import FuzzConstants
 
 import os
 import json
@@ -69,7 +69,7 @@ def show_stats(fuzz):
     # print(f"当前探索模式: {fuzz.exploration_mode}")
     # print(f"当前覆盖率位图大小：{fuzz.bitmap_size}")
 
-    print(f"[*] Log_{fuzz.status_show_count} time:{fuzz.program_run_time:.2f}s (exec_count={fuzz.exec_called_times}  crash={fuzz.total_crash_count}  timeout={fuzz.total_timeout_count}  bitmap_size={fuzz.bitmap_size}  cycle_times={fuzz.cycle_times}  cycles_no_new_coverage={fuzz.no_new_coverage_cycle_times})")
+    print(f"[*] Log_{fuzz.status_show_count} time:{fuzz.program_run_time:.2f}s (exec_count={fuzz.exec_called_times}  crash={fuzz.total_crash_count}  timeout={fuzz.total_timeout_count}  now_trying={fuzz.current_mutate_strategy}  bitmap_size={fuzz.bitmap_size}  cycle_times={fuzz.cycle_times}  cycles_no_new_coverage={fuzz.no_new_coverage_cycle_times})")
 
 
 # def save_data(fuzz):

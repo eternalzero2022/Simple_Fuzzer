@@ -2,22 +2,22 @@
 
 
 # 默认值
-# in ?= ""
-# out ?= /fuzz_output
-# cmd ?= ""
-# stg ?= COVERAGE
-# name ?= default
-
-in ?= "seeds_example"
+in ?= ""
 out ?= ./fuzz_output
-cmd ?= "program/calculator"
+cmd ?= ""
 stg ?= COVERAGE
 name ?= default
+
+# in ?= "seeds_example"
+# out ?= ./fuzz_output
+# cmd ?= "program/calculator"
+# stg ?= COVERAGE
+# name ?= default
 
 
 # 运行命令
 run:
-	@CMD="python3 ./src/main.py"; \
+	@CMD="python3 ./fuzz.py"; \
 	if [ "$(in)" != "" ]; then \
 		CMD="$${CMD} -i $(in)"; \
 	fi; \
