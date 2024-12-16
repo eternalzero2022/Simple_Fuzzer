@@ -104,7 +104,7 @@ def main(args):
 
     path_tmp = args.cmd.split()
     file_to_execute_path = os.path.abspath(path_tmp[0])
-    if not check_afl_in_binary:
+    if not check_afl_in_binary(file_to_execute_path):
         print("错误：待执行程序未经过afl-cc插桩编译")
         exit(1)
     else:
