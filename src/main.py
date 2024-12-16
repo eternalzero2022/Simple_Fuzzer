@@ -12,6 +12,20 @@ from src.result_monitor import show_stats, save_data, outdir_init
 from src.executor import perform_dry_run
 from src.evaluator import save_coverage_plot, display_fuzz_config, display_result_info
 
+def check_afl_in_binary(file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            content = file.read()
+            if b'afl' in content:
+                return True
+            else:
+                return False
+    except FileNotFoundError:
+        print(f"文件未找到: {file_path}")
+        return False
+    except Exception as e:
+        print(f"发生错误: {e}")
+        return False
 
 def signal_hanlder(signum, frame):
     """
@@ -87,6 +101,14 @@ def main(args):
     fuzz = Fuzz(args.i, args.o, args.cmd, args.s, args.n)
 
     display_fuzz_config(fuzz)
+
+    path_tmp = args.cmd.split()
+    file_to_execute_path = os.path.abspath(path_tmp[0])
+    if not check_afl_in_binary:
+        print("错误：待执行程序未经过afl-cc插桩编译")
+        exit(1)
+    else:
+        print("待执行程序已经过afl插桩编译")
 
 
 

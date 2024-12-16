@@ -5,6 +5,7 @@ from src.model import Fuzz, SeedEntry
 from src.power_scheduler import calculate_score
 from src.executor import execute_seed
 from src.result_monitor import save_data, save_crash_seed, save_timeout_seed
+from src.fuzzconstants import FuzzConstants
 
 
 def fuzz_one(fuzz):
@@ -166,7 +167,21 @@ def bitflip_mutation(seed, L=8, S=8):  # L/S 变体包括1/1、2/1、4/1、8/8�
     if not seed:
         return seed
     seed = bytearray(seed)
+
+    length = len(seed)
+    skip_bytes = 24;
+    if length <= 48:
+        skip_bytes = 8
+    if length <= 24:
+        skip_bytes = 0
+    
+    
     for i in range(0, len(seed) * 8, S):
+
+        # 跳过前8个字节
+        if i // 8 < skip_bytes and FuzzConstants.not_modify_title_bytes_when_mutating:
+            continue
+
         for j in range(L):
             if i + j < len(seed) * 8:
                 byte_index, bit_index = divmod(i + j, 8)
@@ -180,7 +195,22 @@ def arithmetic_mutation(seed, L=8):  # L可能为8 16 32
         return seed
     seed = bytearray(seed)
     step = L // 8
+
+    length = len(seed)
+    skip_bytes = 24;
+    if length <= 48:
+        skip_bytes = 8
+    if length <= 24:
+        skip_bytes = 0
+
+    
+ 
     for i in range(0, len(seed) - step + 1, 1):  # 按 8 位步长操作
+
+        # 跳过前16个字节
+        if i < skip_bytes and FuzzConstants.not_modify_title_bytes_when_mutating:
+            continue
+
         value = int.from_bytes(seed[i:i + step], 'little', signed=False)
         # 随机选择加法或减法
         mutation_type = random.choice(['add', 'sub'])
@@ -204,7 +234,20 @@ def interest_mutation(seed, L=8):  # L可能为8 16 32
         return seed
     seed = bytearray(seed)
     step = L // 8
+
+    length = len(seed)
+    skip_bytes = 24;
+    if length <= 48:
+        skip_bytes = 8
+    if length <= 24:
+        skip_bytes = 0
+
     for i in range(0, len(seed) - step + 1, step):
+
+        # 跳过前16个字节
+        if i < skip_bytes and FuzzConstants.not_modify_title_bytes_when_mutating:
+            continue
+
         value = random.choice(interesting_values[L])
         seed[i:i + step] = value.to_bytes(step, 'little', signed=False)
     return bytes(seed)

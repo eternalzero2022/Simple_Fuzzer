@@ -10,6 +10,8 @@ class FuzzConstants:
 
     exec_timeout = 3
 
+    not_modify_title_bytes_when_mutating = True
+
     # status_show_count = 0
     data_file_count = 0
 

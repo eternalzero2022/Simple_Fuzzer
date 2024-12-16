@@ -1,13 +1,13 @@
 Performing C SOURCE FILE Test RIGHT_SHIFT_IS_UNSIGNED failed with the following compile output:
 Change Dir: /src/libjpeg-turbo-3.0.4/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3f08c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3f08c.dir/build.make CMakeFiles/cmTC_3f08c.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d9c21/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d9c21.dir/build.make CMakeFiles/cmTC_d9c21.dir/build
 gmake[1]: Entering directory '/src/libjpeg-turbo-3.0.4/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_3f08c.dir/src.c.o
-/AFLplusplus/afl-cc -DRIGHT_SHIFT_IS_UNSIGNED   -MD -MT CMakeFiles/cmTC_3f08c.dir/src.c.o -MF CMakeFiles/cmTC_3f08c.dir/src.c.o.d -o CMakeFiles/cmTC_3f08c.dir/src.c.o -c /src/libjpeg-turbo-3.0.4/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_3f08c
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3f08c.dir/link.txt --verbose=1
-/AFLplusplus/afl-cc CMakeFiles/cmTC_3f08c.dir/src.c.o -o cmTC_3f08c 
+Building C object CMakeFiles/cmTC_d9c21.dir/src.c.o
+/AFLplusplus/afl-cc -DRIGHT_SHIFT_IS_UNSIGNED   -MD -MT CMakeFiles/cmTC_d9c21.dir/src.c.o -MF CMakeFiles/cmTC_d9c21.dir/src.c.o.d -o CMakeFiles/cmTC_d9c21.dir/src.c.o -c /src/libjpeg-turbo-3.0.4/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_d9c21
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d9c21.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_d9c21.dir/src.c.o -o cmTC_d9c21 
 gmake[1]: Leaving directory '/src/libjpeg-turbo-3.0.4/build/CMakeFiles/CMakeTmp'
 
 
