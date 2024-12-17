@@ -1,0 +1,886 @@
+The system is: Linux - 5.15.167.4-microsoft-standard-WSL2 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /AFLplusplus/afl-cc 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/3.22.1/CompilerIdC/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b9132/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b9132.dir/build.make CMakeFiles/cmTC_b9132.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o
+/AFLplusplus/afl-cc   -v -MD -MT CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+Ubuntu clang version 16.0.6 (++20231112100510+7cbf1a259152-1~exp1~20231112100554.106)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-16/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11
+Candidate multilib: .;@m64
+Candidate multilib: 32;@m32
+Candidate multilib: x32;@mx32
+Selected multilib: .;@m64
+ (in-process)
+ "/usr/lib/llvm-16/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -fhalf-no-semantic-interposition -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=5 -debugger-tuning=gdb -v -fcoverage-compilation-dir=/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-16/lib/clang/16 -dependency-file CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -sys-header-deps -D __AFL_COMPILER=1 -D FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1 -D "__AFL_COVERAGE()=int __afl_selective_coverage = 1;void __afl_coverage_discard();void __afl_coverage_skip();void __afl_coverage_on();void __afl_coverage_off();" -D "__AFL_COVERAGE_START_OFF()=int __afl_selective_coverage_start_off = 1;" -D __AFL_COVERAGE_ON()=__afl_coverage_on() -D __AFL_COVERAGE_OFF()=__afl_coverage_off() -D __AFL_COVERAGE_DISCARD()=__afl_coverage_discard() -D __AFL_COVERAGE_SKIP()=__afl_coverage_skip() -D __AFL_HAVE_MANUAL_CONTROL=1 -D "__AFL_FUZZ_INIT()=int __afl_sharedmem_fuzzing = 1;extern __attribute__((visibility(\"default\"))) unsigned int *__afl_fuzz_len;extern __attribute__((visibility(\"default\"))) unsigned char *__afl_fuzz_ptr;unsigned char __afl_fuzz_alt[1048576];unsigned char *__afl_fuzz_alt_ptr = __afl_fuzz_alt;" -D "__AFL_FUZZ_TESTCASE_BUF=(__afl_fuzz_ptr ? __afl_fuzz_ptr : __afl_fuzz_alt_ptr)" -D "__AFL_FUZZ_TESTCASE_LEN=(__afl_fuzz_ptr ? *__afl_fuzz_len : (*__afl_fuzz_len = read(0, __afl_fuzz_alt_ptr, 1048576)) == 0xffffffff ? 0 : *__afl_fuzz_len)" -D "__AFL_LOOP(_A)=({ static volatile const char *_B __attribute__((used,unused));  _B = (const char*)\"##SIG_AFL_PERSISTENT##\"; extern __attribute__((visibility(\"default\"))) int __afl_connected;__attribute__((visibility(\"default\"))) int _L(unsigned int) __asm__(\"__afl_persistent_loop\"); _L(__afl_connected ? _A : 1); })" -D "__AFL_INIT()=do { static volatile const char *_A __attribute__((used,unused));  _A = (const char*)\"##SIG_AFL_DEFER_FORKSRV##\"; __attribute__((visibility(\"default\"))) void _I(void) __asm__(\"__afl_manual_init\"); _I(); } while (0)" -internal-isystem /usr/lib/llvm-16/lib/clang/16/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -O3 -Wno-unused-command-line-argument -fdebug-compilation-dir=/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp -ferror-limit 19 -funroll-loops -fgnuc-version=4.2.1 -vectorize-loops -vectorize-slp -fpass-plugin=/AFLplusplus/SanitizerCoveragePCGUARD.so -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+clang -cc1 version 16.0.6 based upon LLVM 16.0.6 default target x86_64-pc-linux-gnu
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include"
+ignoring nonexistent directory "/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/llvm-16/lib/clang/16/include
+ /usr/local/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+Linking C executable cmTC_b9132
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9132.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -v CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -o cmTC_b9132 
+Ubuntu clang version 16.0.6 (++20231112100510+7cbf1a259152-1~exp1~20231112100554.106)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-16/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11
+Candidate multilib: .;@m64
+Candidate multilib: 32;@m32
+Candidate multilib: x32;@mx32
+Selected multilib: .;@m64
+ "/usr/bin/ld" -pie -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_b9132 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib64 -L/usr/lib/llvm-16/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o /AFLplusplus/afl-compiler-rt.o --dynamic-list=/AFLplusplus/dynamic_list.txt -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /lib/x86_64-linux-gnu/crtn.o
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/lib/llvm-16/lib/clang/16/include]
+    add: [/usr/local/include]
+    add: [/usr/include/x86_64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/lib/llvm-16/lib/clang/16/include] ==> [/usr/lib/llvm-16/lib/clang/16/include]
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/lib/llvm-16/lib/clang/16/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b9132/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b9132.dir/build.make CMakeFiles/cmTC_b9132.dir/build]
+  ignore line: [gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/AFLplusplus/afl-cc   -v -MD -MT CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [Ubuntu clang version 16.0.6 (++20231112100510+7cbf1a259152-1~exp1~20231112100554.106)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-16/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Candidate multilib: 32]
+  ignore line: [@m32]
+  ignore line: [Candidate multilib: x32]
+  ignore line: [@mx32]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-16/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -fhalf-no-semantic-interposition -mframe-pointer=none -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -mllvm -treat-scalable-fixed-error-as-warning -debug-info-kind=constructor -dwarf-version=5 -debugger-tuning=gdb -v -fcoverage-compilation-dir=/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp -resource-dir /usr/lib/llvm-16/lib/clang/16 -dependency-file CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -sys-header-deps -D __AFL_COMPILER=1 -D FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1 -D "__AFL_COVERAGE()=int __afl_selective_coverage = 1]
+  ignore line: [void __afl_coverage_discard()]
+  ignore line: [void __afl_coverage_skip()]
+  ignore line: [void __afl_coverage_on()]
+  ignore line: [void __afl_coverage_off()]
+  ignore line: [" -D "__AFL_COVERAGE_START_OFF()=int __afl_selective_coverage_start_off = 1]
+  ignore line: [" -D __AFL_COVERAGE_ON()=__afl_coverage_on() -D __AFL_COVERAGE_OFF()=__afl_coverage_off() -D __AFL_COVERAGE_DISCARD()=__afl_coverage_discard() -D __AFL_COVERAGE_SKIP()=__afl_coverage_skip() -D __AFL_HAVE_MANUAL_CONTROL=1 -D "__AFL_FUZZ_INIT()=int __afl_sharedmem_fuzzing = 1]
+  ignore line: [extern __attribute__((visibility(\"default\"))) unsigned int *__afl_fuzz_len]
+  ignore line: [extern __attribute__((visibility(\"default\"))) unsigned char *__afl_fuzz_ptr]
+  ignore line: [unsigned char __afl_fuzz_alt[1048576]]
+  ignore line: [unsigned char *__afl_fuzz_alt_ptr = __afl_fuzz_alt]
+  ignore line: [" -D "__AFL_FUZZ_TESTCASE_BUF=(__afl_fuzz_ptr ? __afl_fuzz_ptr : __afl_fuzz_alt_ptr)" -D "__AFL_FUZZ_TESTCASE_LEN=(__afl_fuzz_ptr ? *__afl_fuzz_len : (*__afl_fuzz_len = read(0  __afl_fuzz_alt_ptr  1048576)) == 0xffffffff ? 0 : *__afl_fuzz_len)" -D "__AFL_LOOP(_A)=({ static volatile const char *_B __attribute__((used unused))]
+  ignore line: [  _B = (const char*)\"##SIG_AFL_PERSISTENT##\"]
+  ignore line: [ extern __attribute__((visibility(\"default\"))) int __afl_connected]
+  ignore line: [__attribute__((visibility(\"default\"))) int _L(unsigned int) __asm__(\"__afl_persistent_loop\")]
+  ignore line: [ _L(__afl_connected ? _A : 1)]
+  ignore line: [ })" -D "__AFL_INIT()=do { static volatile const char *_A __attribute__((used unused))]
+  ignore line: [  _A = (const char*)\"##SIG_AFL_DEFER_FORKSRV##\"]
+  ignore line: [ __attribute__((visibility(\"default\"))) void _I(void) __asm__(\"__afl_manual_init\")]
+  ignore line: [ _I()]
+  ignore line: [ } while (0)" -internal-isystem /usr/lib/llvm-16/lib/clang/16/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -O3 -Wno-unused-command-line-argument -fdebug-compilation-dir=/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp -ferror-limit 19 -funroll-loops -fgnuc-version=4.2.1 -vectorize-loops -vectorize-slp -fpass-plugin=/AFLplusplus/SanitizerCoveragePCGUARD.so -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 16.0.6 based upon LLVM 16.0.6 default target x86_64-pc-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include"]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/lib/llvm-16/lib/clang/16/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/include/x86_64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_b9132]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9132.dir/link.txt --verbose=1]
+  ignore line: [/AFLplusplus/afl-cc  -v CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o -o cmTC_b9132 ]
+  ignore line: [Ubuntu clang version 16.0.6 (++20231112100510+7cbf1a259152-1~exp1~20231112100554.106)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-16/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/11]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Candidate multilib: 32]
+  ignore line: [@m32]
+  ignore line: [Candidate multilib: x32]
+  ignore line: [@mx32]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  link line: [ "/usr/bin/ld" -pie -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_b9132 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib64 -L/usr/lib/llvm-16/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o /AFLplusplus/afl-compiler-rt.o --dynamic-list=/AFLplusplus/dynamic_list.txt -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /lib/x86_64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_b9132] ==> ignore
+    arg [/lib/x86_64-linux-gnu/Scrt1.o] ==> obj [/lib/x86_64-linux-gnu/Scrt1.o]
+    arg [/lib/x86_64-linux-gnu/crti.o] ==> obj [/lib/x86_64-linux-gnu/crti.o]
+    arg [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/11] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib64]
+    arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/usr/lib/llvm-16/bin/../lib] ==> dir [/usr/lib/llvm-16/bin/../lib]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_b9132.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [/AFLplusplus/afl-compiler-rt.o] ==> obj [/AFLplusplus/afl-compiler-rt.o]
+    arg [--dynamic-list=/AFLplusplus/dynamic_list.txt] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o]
+    arg [/lib/x86_64-linux-gnu/crtn.o] ==> obj [/lib/x86_64-linux-gnu/crtn.o]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11] ==> [/usr/lib/gcc/x86_64-linux-gnu/11]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/usr/lib/llvm-16/bin/../lib] ==> [/usr/lib/llvm-16/lib]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit objs: [/lib/x86_64-linux-gnu/Scrt1.o;/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o;/AFLplusplus/afl-compiler-rt.o;/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o;/lib/x86_64-linux-gnu/crtn.o]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/11;/usr/lib64;/lib/x86_64-linux-gnu;/lib64;/usr/lib/x86_64-linux-gnu;/usr/lib/llvm-16/lib;/lib;/usr/lib]
+  implicit fwks: []
+
+
+Performing C SOURCE FILE Test std-gnu99 succeeded with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ae090/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_ae090.dir/build.make CMakeFiles/cmTC_ae090.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ae090.dir/src.c.o
+/AFLplusplus/afl-cc   -Dstd-gnu99 -std=gnu99 -MD -MT CMakeFiles/cmTC_ae090.dir/src.c.o -MF CMakeFiles/cmTC_ae090.dir/src.c.o.d -o CMakeFiles/cmTC_ae090.dir/src.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/src.c
+In file included from <built-in>:372:
+<command line>:1:12: warning: ISO C99 requires whitespace after the macro name [-Wc99-extensions]
+#define std-gnu99 1
+           ^
+1 warning generated.
+Linking C executable cmTC_ae090
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ae090.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_ae090.dir/src.c.o -o cmTC_ae090 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main(void) { return 0; }
+Determining if the include file sys/types.h exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_fbd77/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_fbd77.dir/build.make CMakeFiles/cmTC_fbd77.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_fbd77.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_fbd77.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_fbd77.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_fbd77.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_fbd77
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fbd77.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_fbd77.dir/CheckIncludeFile.c.o -o cmTC_fbd77 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the include file stdint.h exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_04fc4/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_04fc4.dir/build.make CMakeFiles/cmTC_04fc4.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_04fc4.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_04fc4.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_04fc4.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_04fc4.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_04fc4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_04fc4.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_04fc4.dir/CheckIncludeFile.c.o -o cmTC_04fc4 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the include file stddef.h exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0077d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0077d.dir/build.make CMakeFiles/cmTC_0077d.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0077d.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_0077d.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_0077d.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_0077d.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_0077d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0077d.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_0077d.dir/CheckIncludeFile.c.o -o cmTC_0077d 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining size of time_t passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_49c29/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_49c29.dir/build.make CMakeFiles/cmTC_49c29.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_49c29.dir/SIZEOF_TIME_T.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_49c29.dir/SIZEOF_TIME_T.c.o -MF CMakeFiles/cmTC_49c29.dir/SIZEOF_TIME_T.c.o.d -o CMakeFiles/cmTC_49c29.dir/SIZEOF_TIME_T.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CheckTypeSize/SIZEOF_TIME_T.c
+Linking C executable cmTC_49c29
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_49c29.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_49c29.dir/SIZEOF_TIME_T.c.o -o cmTC_49c29 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the include file net/if.h exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3e00b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3e00b.dir/build.make CMakeFiles/cmTC_3e00b.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3e00b.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_3e00b.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_3e00b.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_3e00b.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_3e00b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3e00b.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_3e00b.dir/CheckIncludeFile.c.o -o cmTC_3e00b 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function strdup exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_29504/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_29504.dir/build.make CMakeFiles/cmTC_29504.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_29504.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=strdup -MD -MT CMakeFiles/cmTC_29504.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_29504.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_29504.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+/usr/share/cmake-3.22/Modules/CheckFunctionExists.c:7:3: warning: incompatible redeclaration of library function 'strdup' [-Wincompatible-library-redeclaration]
+  CHECK_FUNCTION_EXISTS(void);
+  ^
+<command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+#define CHECK_FUNCTION_EXISTS strdup
+                              ^
+/usr/share/cmake-3.22/Modules/CheckFunctionExists.c:7:3: note: 'strdup' is a builtin with type 'char *(const char *)'
+<command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+#define CHECK_FUNCTION_EXISTS strdup
+                              ^
+1 warning generated.
+Linking C executable cmTC_29504
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_29504.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=strdup CMakeFiles/cmTC_29504.dir/CheckFunctionExists.c.o -o cmTC_29504 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function strsep exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_4c3c8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_4c3c8.dir/build.make CMakeFiles/cmTC_4c3c8.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4c3c8.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=strsep -MD -MT CMakeFiles/cmTC_4c3c8.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_4c3c8.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_4c3c8.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_4c3c8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4c3c8.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=strsep CMakeFiles/cmTC_4c3c8.dir/CheckFunctionExists.c.o -o cmTC_4c3c8 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function gethostbyaddr exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b7470/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b7470.dir/build.make CMakeFiles/cmTC_b7470.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b7470.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=gethostbyaddr -MD -MT CMakeFiles/cmTC_b7470.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_b7470.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_b7470.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_b7470
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b7470.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=gethostbyaddr CMakeFiles/cmTC_b7470.dir/CheckFunctionExists.c.o -o cmTC_b7470 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function getservent exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_62a9d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_62a9d.dir/build.make CMakeFiles/cmTC_62a9d.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_62a9d.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=getservent -MD -MT CMakeFiles/cmTC_62a9d.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_62a9d.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_62a9d.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_62a9d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_62a9d.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=getservent CMakeFiles/cmTC_62a9d.dir/CheckFunctionExists.c.o -o cmTC_62a9d 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the snprintf exist passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5f102/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5f102.dir/build.make CMakeFiles/cmTC_5f102.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5f102.dir/CheckSymbolExists.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_5f102.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_5f102.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_5f102.dir/CheckSymbolExists.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_5f102
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5f102.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_5f102.dir/CheckSymbolExists.c.o -o cmTC_5f102 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+File /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdio.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef snprintf
+  return ((int*)(&snprintf))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Performing C SOURCE FILE Test SUITABLE_SNPRINTF succeeded with the following compile output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bae2c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_bae2c.dir/build.make CMakeFiles/cmTC_bae2c.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_bae2c.dir/src.c.o
+/AFLplusplus/afl-cc -DSUITABLE_SNPRINTF   -MD -MT CMakeFiles/cmTC_bae2c.dir/src.c.o -MF CMakeFiles/cmTC_bae2c.dir/src.c.o.d -o CMakeFiles/cmTC_bae2c.dir/src.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_bae2c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bae2c.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_bae2c.dir/src.c.o -o cmTC_bae2c 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#include <stdio.h>
+#include <string.h>
+#include <inttypes.h>
+#include <sys/types.h>
+
+int main()
+{
+  char buf[100];
+  uint64_t t = (uint64_t)1 << 32;
+
+  snprintf(buf, sizeof(buf), "%zu", sizeof(buf));
+  if (strncmp(buf, "100", sizeof(buf)))
+    return 1;
+
+  snprintf(buf, sizeof(buf), "%zd", -sizeof(buf));
+  if (strncmp(buf, "-100", sizeof(buf)))
+    return 2;
+
+  snprintf(buf, sizeof(buf), "%" PRId64, -t);
+  if (strncmp(buf, "-4294967296", sizeof(buf)))
+    return 3;
+
+  snprintf(buf, sizeof(buf), "0o%" PRIo64, t);
+  if (strncmp(buf, "0o40000000000", sizeof(buf)))
+    return 4;
+
+  snprintf(buf, sizeof(buf), "0x%" PRIx64, t);
+  if (strncmp(buf, "0x100000000", sizeof(buf)))
+    return 5;
+
+  snprintf(buf, sizeof(buf), "%" PRIu64, t);
+  if (strncmp(buf, "4294967296", sizeof(buf)))
+    return 6;
+
+  return 0;
+}
+
+
+Determining if the function getopt_long exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_17eaa/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_17eaa.dir/build.make CMakeFiles/cmTC_17eaa.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_17eaa.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=getopt_long -MD -MT CMakeFiles/cmTC_17eaa.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_17eaa.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_17eaa.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_17eaa
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_17eaa.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=getopt_long CMakeFiles/cmTC_17eaa.dir/CheckFunctionExists.c.o -o cmTC_17eaa 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function setlinebuf exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_19dc6/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_19dc6.dir/build.make CMakeFiles/cmTC_19dc6.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_19dc6.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=setlinebuf -MD -MT CMakeFiles/cmTC_19dc6.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_19dc6.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_19dc6.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_19dc6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_19dc6.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=setlinebuf CMakeFiles/cmTC_19dc6.dir/CheckFunctionExists.c.o -o cmTC_19dc6 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function fork exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b9e6b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b9e6b.dir/build.make CMakeFiles/cmTC_b9e6b.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b9e6b.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=fork -MD -MT CMakeFiles/cmTC_b9e6b.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_b9e6b.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_b9e6b.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_b9e6b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9e6b.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=fork CMakeFiles/cmTC_b9e6b.dir/CheckFunctionExists.c.o -o cmTC_b9e6b 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function vfork exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_384ee/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_384ee.dir/build.make CMakeFiles/cmTC_384ee.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_384ee.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=vfork -MD -MT CMakeFiles/cmTC_384ee.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_384ee.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_384ee.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+/usr/share/cmake-3.22/Modules/CheckFunctionExists.c:7:3: warning: incompatible redeclaration of library function 'vfork' [-Wincompatible-library-redeclaration]
+  CHECK_FUNCTION_EXISTS(void);
+  ^
+<command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+#define CHECK_FUNCTION_EXISTS vfork
+                              ^
+/usr/share/cmake-3.22/Modules/CheckFunctionExists.c:7:3: note: 'vfork' is a builtin with type 'int (void)'
+<command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+#define CHECK_FUNCTION_EXISTS vfork
+                              ^
+1 warning generated.
+Linking C executable cmTC_384ee
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_384ee.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=vfork CMakeFiles/cmTC_384ee.dir/CheckFunctionExists.c.o -o cmTC_384ee 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function getrpcbynumber exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_96db1/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_96db1.dir/build.make CMakeFiles/cmTC_96db1.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_96db1.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=getrpcbynumber -MD -MT CMakeFiles/cmTC_96db1.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_96db1.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_96db1.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_96db1
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_96db1.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=getrpcbynumber CMakeFiles/cmTC_96db1.dir/CheckFunctionExists.c.o -o cmTC_96db1 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function ether_ntohost exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f7f91/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f7f91.dir/build.make CMakeFiles/cmTC_f7f91.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f7f91.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=ether_ntohost -MD -MT CMakeFiles/cmTC_f7f91.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_f7f91.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_f7f91.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_f7f91
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f7f91.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=ether_ntohost CMakeFiles/cmTC_f7f91.dir/CheckFunctionExists.c.o -o cmTC_f7f91 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the ether_ntohost exist passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_903d7/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_903d7.dir/build.make CMakeFiles/cmTC_903d7.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_903d7.dir/CheckSymbolExists.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_903d7.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_903d7.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_903d7.dir/CheckSymbolExists.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_903d7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_903d7.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_903d7.dir/CheckSymbolExists.c.o -o cmTC_903d7 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+File /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <netinet/ether.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef ether_ntohost
+  return ((int*)(&ether_ntohost))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the AF_INET6 exist passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_65c5e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_65c5e.dir/build.make CMakeFiles/cmTC_65c5e.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_65c5e.dir/CheckSymbolExists.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_65c5e.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_65c5e.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_65c5e.dir/CheckSymbolExists.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_65c5e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_65c5e.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_65c5e.dir/CheckSymbolExists.c.o -o cmTC_65c5e 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+File /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef AF_INET6
+  return ((int*)(&AF_INET6))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining size of struct in6_addr passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_60ceb/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_60ceb.dir/build.make CMakeFiles/cmTC_60ceb.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_60ceb.dir/HAVE_STRUCT_IN6_ADDR.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_60ceb.dir/HAVE_STRUCT_IN6_ADDR.c.o -MF CMakeFiles/cmTC_60ceb.dir/HAVE_STRUCT_IN6_ADDR.c.o.d -o CMakeFiles/cmTC_60ceb.dir/HAVE_STRUCT_IN6_ADDR.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CheckTypeSize/HAVE_STRUCT_IN6_ADDR.c
+Linking C executable cmTC_60ceb
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_60ceb.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_60ceb.dir/HAVE_STRUCT_IN6_ADDR.c.o -o cmTC_60ceb 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the include file pcap/pcap-inttypes.h exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_185bd/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_185bd.dir/build.make CMakeFiles/cmTC_185bd.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_185bd.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_185bd.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_185bd.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_185bd.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_185bd
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_185bd.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_185bd.dir/CheckIncludeFile.c.o -o cmTC_185bd 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining size of pcap_if_t passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f655e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f655e.dir/build.make CMakeFiles/cmTC_f655e.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f655e.dir/PCAP_IF_T.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_f655e.dir/PCAP_IF_T.c.o -MF CMakeFiles/cmTC_f655e.dir/PCAP_IF_T.c.o.d -o CMakeFiles/cmTC_f655e.dir/PCAP_IF_T.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CheckTypeSize/PCAP_IF_T.c
+Linking C executable cmTC_f655e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f655e.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc CMakeFiles/cmTC_f655e.dir/PCAP_IF_T.c.o -o cmTC_f655e 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_list_datalinks exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_96bde/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_96bde.dir/build.make CMakeFiles/cmTC_96bde.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_96bde.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_list_datalinks -MD -MT CMakeFiles/cmTC_96bde.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_96bde.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_96bde.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_96bde
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_96bde.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_list_datalinks CMakeFiles/cmTC_96bde.dir/CheckFunctionExists.c.o -o cmTC_96bde  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_free_datalinks exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d8f2b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d8f2b.dir/build.make CMakeFiles/cmTC_d8f2b.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d8f2b.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_free_datalinks -MD -MT CMakeFiles/cmTC_d8f2b.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_d8f2b.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_d8f2b.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d8f2b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d8f2b.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_free_datalinks CMakeFiles/cmTC_d8f2b.dir/CheckFunctionExists.c.o -o cmTC_d8f2b  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_datalink_name_to_val exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0e1c5/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0e1c5.dir/build.make CMakeFiles/cmTC_0e1c5.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0e1c5.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_datalink_name_to_val -MD -MT CMakeFiles/cmTC_0e1c5.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_0e1c5.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_0e1c5.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_0e1c5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0e1c5.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_datalink_name_to_val CMakeFiles/cmTC_0e1c5.dir/CheckFunctionExists.c.o -o cmTC_0e1c5  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_datalink_val_to_description exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5a48c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5a48c.dir/build.make CMakeFiles/cmTC_5a48c.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5a48c.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_datalink_val_to_description -MD -MT CMakeFiles/cmTC_5a48c.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_5a48c.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_5a48c.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_5a48c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5a48c.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_datalink_val_to_description CMakeFiles/cmTC_5a48c.dir/CheckFunctionExists.c.o -o cmTC_5a48c  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_set_datalink exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3eea4/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3eea4.dir/build.make CMakeFiles/cmTC_3eea4.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3eea4.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_datalink -MD -MT CMakeFiles/cmTC_3eea4.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_3eea4.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_3eea4.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_3eea4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3eea4.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_datalink CMakeFiles/cmTC_3eea4.dir/CheckFunctionExists.c.o -o cmTC_3eea4  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_breakloop exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a40d4/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a40d4.dir/build.make CMakeFiles/cmTC_a40d4.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a40d4.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_breakloop -MD -MT CMakeFiles/cmTC_a40d4.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_a40d4.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_a40d4.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_a40d4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a40d4.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_breakloop CMakeFiles/cmTC_a40d4.dir/CheckFunctionExists.c.o -o cmTC_a40d4  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_dump_ftell exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a0f48/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a0f48.dir/build.make CMakeFiles/cmTC_a0f48.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a0f48.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_dump_ftell -MD -MT CMakeFiles/cmTC_a0f48.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_a0f48.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_a0f48.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_a0f48
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a0f48.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_dump_ftell CMakeFiles/cmTC_a0f48.dir/CheckFunctionExists.c.o -o cmTC_a0f48  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_statustostr exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_8bfe5/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_8bfe5.dir/build.make CMakeFiles/cmTC_8bfe5.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8bfe5.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_statustostr -MD -MT CMakeFiles/cmTC_8bfe5.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_8bfe5.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_8bfe5.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_8bfe5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8bfe5.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_statustostr CMakeFiles/cmTC_8bfe5.dir/CheckFunctionExists.c.o -o cmTC_8bfe5  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_create exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_883ed/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_883ed.dir/build.make CMakeFiles/cmTC_883ed.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_883ed.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_create -MD -MT CMakeFiles/cmTC_883ed.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_883ed.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_883ed.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_883ed
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_883ed.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_create CMakeFiles/cmTC_883ed.dir/CheckFunctionExists.c.o -o cmTC_883ed  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_set_tstamp_type exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f3c78/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f3c78.dir/build.make CMakeFiles/cmTC_f3c78.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f3c78.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_tstamp_type -MD -MT CMakeFiles/cmTC_f3c78.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_f3c78.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_f3c78.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_f3c78
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f3c78.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_tstamp_type CMakeFiles/cmTC_f3c78.dir/CheckFunctionExists.c.o -o cmTC_f3c78  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_set_tstamp_precision exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b53f4/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b53f4.dir/build.make CMakeFiles/cmTC_b53f4.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b53f4.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_tstamp_precision -MD -MT CMakeFiles/cmTC_b53f4.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_b53f4.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_b53f4.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_b53f4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b53f4.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_tstamp_precision CMakeFiles/cmTC_b53f4.dir/CheckFunctionExists.c.o -o cmTC_b53f4  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_findalldevs exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9800f/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9800f.dir/build.make CMakeFiles/cmTC_9800f.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_9800f.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_findalldevs -MD -MT CMakeFiles/cmTC_9800f.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_9800f.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_9800f.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_9800f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9800f.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_findalldevs CMakeFiles/cmTC_9800f.dir/CheckFunctionExists.c.o -o cmTC_9800f  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_dump_flush exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_52c13/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_52c13.dir/build.make CMakeFiles/cmTC_52c13.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_52c13.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_dump_flush -MD -MT CMakeFiles/cmTC_52c13.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_52c13.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_52c13.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_52c13
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_52c13.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_dump_flush CMakeFiles/cmTC_52c13.dir/CheckFunctionExists.c.o -o cmTC_52c13  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_lib_version exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_40001/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_40001.dir/build.make CMakeFiles/cmTC_40001.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_40001.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_lib_version -MD -MT CMakeFiles/cmTC_40001.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_40001.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_40001.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_40001
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_40001.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_lib_version CMakeFiles/cmTC_40001.dir/CheckFunctionExists.c.o -o cmTC_40001  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_setdirection exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_4d603/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_4d603.dir/build.make CMakeFiles/cmTC_4d603.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4d603.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_setdirection -MD -MT CMakeFiles/cmTC_4d603.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_4d603.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_4d603.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_4d603
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4d603.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_setdirection CMakeFiles/cmTC_4d603.dir/CheckFunctionExists.c.o -o cmTC_4d603  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_set_immediate_mode exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c5b04/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_c5b04.dir/build.make CMakeFiles/cmTC_c5b04.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c5b04.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_immediate_mode -MD -MT CMakeFiles/cmTC_c5b04.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_c5b04.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_c5b04.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_c5b04
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c5b04.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_immediate_mode CMakeFiles/cmTC_c5b04.dir/CheckFunctionExists.c.o -o cmTC_c5b04  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function pcap_dump_ftell64 exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_755ff/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_755ff.dir/build.make CMakeFiles/cmTC_755ff.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_755ff.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_dump_ftell64 -MD -MT CMakeFiles/cmTC_755ff.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_755ff.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_755ff.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_755ff
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_755ff.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_dump_ftell64 CMakeFiles/cmTC_755ff.dir/CheckFunctionExists.c.o -o cmTC_755ff  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the function bpf_dump exists passed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7766d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7766d.dir/build.make CMakeFiles/cmTC_7766d.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_7766d.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=bpf_dump -MD -MT CMakeFiles/cmTC_7766d.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_7766d.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_7766d.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_7766d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7766d.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=bpf_dump CMakeFiles/cmTC_7766d.dir/CheckFunctionExists.c.o -o cmTC_7766d  /usr/lib/x86_64-linux-gnu/libpcap.so 
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+
+
+

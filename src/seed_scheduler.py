@@ -1,9 +1,9 @@
 # 种子选择组件
 import random
 
-from model import Fuzz, SeedEntry
-from fuzzconstants import FuzzConstants
-from power_scheduler import calculate_score
+from src.model import Fuzz, SeedEntry
+from src.fuzzconstants import FuzzConstants
+from src.power_scheduler import calculate_score
 
 
 def select_next_seed(fuzz):

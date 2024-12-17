@@ -1,0 +1,10 @@
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/netdissect.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/tcpdump.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/uninstall.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/check.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/edit_cache.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/rebuild_cache.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/list_install_components.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/install.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/install/local.dir
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/install/strip.dir

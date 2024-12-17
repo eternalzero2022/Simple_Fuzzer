@@ -1,0 +1,257 @@
+Determining if the include file rpc/rpc.h exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3d2bb/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3d2bb.dir/build.make CMakeFiles/cmTC_3d2bb.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3d2bb.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_3d2bb.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_3d2bb.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_3d2bb.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: 'rpc/rpc.h' file not found
+#include <rpc/rpc.h>
+         ^~~~~~~~~~~
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_3d2bb.dir/build.make:79: CMakeFiles/cmTC_3d2bb.dir/CheckIncludeFile.c.o] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_3d2bb/fast] Error 2
+
+
+
+Determining if the function strlcat exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_fdfd6/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_fdfd6.dir/build.make CMakeFiles/cmTC_fdfd6.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=strlcat -MD -MT CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_fdfd6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fdfd6.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=strlcat CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o -o cmTC_fdfd6 
+/usr/bin/ld: CMakeFiles/cmTC_fdfd6.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `strlcat'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_fdfd6.dir/build.make:100: cmTC_fdfd6] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_fdfd6/fast] Error 2
+
+
+
+Determining if the function strlcpy exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_68ce3/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_68ce3.dir/build.make CMakeFiles/cmTC_68ce3.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=strlcpy -MD -MT CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_68ce3
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68ce3.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=strlcpy CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o -o cmTC_68ce3 
+/usr/bin/ld: CMakeFiles/cmTC_68ce3.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `strlcpy'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_68ce3.dir/build.make:100: cmTC_68ce3] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_68ce3/fast] Error 2
+
+
+
+Determining if the ether_ntohost exist failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_191d5/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_191d5.dir/build.make CMakeFiles/cmTC_191d5.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_191d5.dir/CheckSymbolExists.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_191d5.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_191d5.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_191d5.dir/CheckSymbolExists.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'ether_ntohost'
+  return ((int*)(&ether_ntohost))[argc];
+                  ^
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_191d5.dir/build.make:79: CMakeFiles/cmTC_191d5.dir/CheckSymbolExists.c.o] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_191d5/fast] Error 2
+
+
+File /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <net/ethernet.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef ether_ntohost
+  return ((int*)(&ether_ntohost))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the function pcap_open exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_df5f8/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_df5f8.dir/build.make CMakeFiles/cmTC_df5f8.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_open -MD -MT CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_df5f8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_df5f8.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_open CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o -o cmTC_df5f8  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_df5f8.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `pcap_open'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_df5f8.dir/build.make:101: cmTC_df5f8] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_df5f8/fast] Error 2
+
+
+
+Determining if the function pcap_findalldevs_ex exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7f676/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7f676.dir/build.make CMakeFiles/cmTC_7f676.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_findalldevs_ex -MD -MT CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_7f676
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7f676.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_findalldevs_ex CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o -o cmTC_7f676  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_7f676.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `pcap_findalldevs_ex'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_7f676.dir/build.make:101: cmTC_7f676] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_7f676/fast] Error 2
+
+
+
+Determining if the function pcap_set_parser_debug exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_43c6c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_43c6c.dir/build.make CMakeFiles/cmTC_43c6c.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_parser_debug -MD -MT CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_43c6c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_43c6c.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_parser_debug CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o -o cmTC_43c6c  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_43c6c.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `pcap_set_parser_debug'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_43c6c.dir/build.make:101: cmTC_43c6c] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_43c6c/fast] Error 2
+
+
+
+Determining if the variable pcap_debug exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_0d093/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_0d093.dir/build.make CMakeFiles/cmTC_0d093.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_VARIABLE_EXISTS=pcap_debug -MD -MT CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o -MF CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o.d -o CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o -c /usr/share/cmake-3.22/Modules/CheckVariableExists.c
+Linking C executable cmTC_0d093
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0d093.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_VARIABLE_EXISTS=pcap_debug CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o -o cmTC_0d093  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_0d093.dir/CheckVariableExists.c.o: in function `main':
+CheckVariableExists.c:(.text.main[main]+0x5f): undefined reference to `pcap_debug'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_0d093.dir/build.make:101: cmTC_0d093] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_0d093/fast] Error 2
+
+
+
+Determining if the variable yydebug exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b0813/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b0813.dir/build.make CMakeFiles/cmTC_b0813.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_VARIABLE_EXISTS=yydebug -MD -MT CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o -MF CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o.d -o CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o -c /usr/share/cmake-3.22/Modules/CheckVariableExists.c
+Linking C executable cmTC_b0813
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b0813.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_VARIABLE_EXISTS=yydebug CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o -o cmTC_b0813  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_b0813.dir/CheckVariableExists.c.o: in function `main':
+CheckVariableExists.c:(.text.main[main]+0x5f): undefined reference to `yydebug'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_b0813.dir/build.make:101: cmTC_b0813] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_b0813/fast] Error 2
+
+
+
+Determining if the function pcap_set_optimizer_debug exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_941ba/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_941ba.dir/build.make CMakeFiles/cmTC_941ba.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=pcap_set_optimizer_debug -MD -MT CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_941ba
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_941ba.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=pcap_set_optimizer_debug CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o -o cmTC_941ba  /usr/lib/x86_64-linux-gnu/libpcap.so 
+/usr/bin/ld: CMakeFiles/cmTC_941ba.dir/CheckFunctionExists.c.o: in function `main':
+CheckFunctionExists.c:(.text.main[main]+0x28): undefined reference to `pcap_set_optimizer_debug'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_941ba.dir/build.make:101: cmTC_941ba] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_941ba/fast] Error 2
+
+
+
+Determining if files sys/capsicum.h exist failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_f77e3/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_f77e3.dir/build.make CMakeFiles/cmTC_f77e3.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f77e3.dir/HAVE_SYS_CAPSICUM_H.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_f77e3.dir/HAVE_SYS_CAPSICUM_H.c.o -MF CMakeFiles/cmTC_f77e3.dir/HAVE_SYS_CAPSICUM_H.c.o.d -o CMakeFiles/cmTC_f77e3.dir/HAVE_SYS_CAPSICUM_H.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CheckIncludeFiles/HAVE_SYS_CAPSICUM_H.c
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CheckIncludeFiles/HAVE_SYS_CAPSICUM_H.c:2:10: fatal error: 'sys/capsicum.h' file not found
+#include <sys/capsicum.h>
+         ^~~~~~~~~~~~~~~~
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_f77e3.dir/build.make:79: CMakeFiles/cmTC_f77e3.dir/HAVE_SYS_CAPSICUM_H.c.o] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_f77e3/fast] Error 2
+
+
+Source:
+/* */
+#include <sys/capsicum.h>
+
+
+int main(void){return 0;}
+
+Determining if the include file cap-ng.h exists failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d5f1e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d5f1e.dir/build.make CMakeFiles/cmTC_d5f1e.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d5f1e.dir/CheckIncludeFile.c.o
+/AFLplusplus/afl-cc    -MD -MT CMakeFiles/cmTC_d5f1e.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_d5f1e.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_d5f1e.dir/CheckIncludeFile.c.o -c /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: 'cap-ng.h' file not found
+#include <cap-ng.h>
+         ^~~~~~~~~~
+1 error generated.
+gmake[1]: *** [CMakeFiles/cmTC_d5f1e.dir/build.make:79: CMakeFiles/cmTC_d5f1e.dir/CheckIncludeFile.c.o] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_d5f1e/fast] Error 2
+
+
+
+Determining if the function capng_change_id exists in the cap-ng failed with the following output:
+Change Dir: /src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d6c98/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d6c98.dir/build.make CMakeFiles/cmTC_d6c98.dir/build
+gmake[1]: Entering directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d6c98.dir/CheckFunctionExists.c.o
+/AFLplusplus/afl-cc   -DCHECK_FUNCTION_EXISTS=capng_change_id -MD -MT CMakeFiles/cmTC_d6c98.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_d6c98.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_d6c98.dir/CheckFunctionExists.c.o -c /usr/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d6c98
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d6c98.dir/link.txt --verbose=1
+/AFLplusplus/afl-cc  -DCHECK_FUNCTION_EXISTS=capng_change_id CMakeFiles/cmTC_d6c98.dir/CheckFunctionExists.c.o -o cmTC_d6c98  -lcap-ng 
+/usr/bin/ld: cannot find -lcap-ng: No such file or directory
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_d6c98.dir/build.make:100: cmTC_d6c98] Error 1
+gmake[1]: Leaving directory '/src/tcpdump-tcpdump-4.99.5/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_d6c98/fast] Error 2
+
+
+

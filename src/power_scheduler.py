@@ -1,6 +1,6 @@
 # 能量调度组件
-from model import SeedEntry, Fuzz
-from fuzzconstants import FuzzConstants
+from src.model import SeedEntry, Fuzz
+from src.fuzzconstants import FuzzConstants
 
 
 def calculate_score(entry, fuzz):
@@ -18,8 +18,14 @@ def calculate_score(entry, fuzz):
     score = 100
     if FuzzConstants.same_score:
         return score
+    
+    avg_bitmap_size = 0
+    if fuzz.bitmap_entry_count == 0:
+        avg_bitmap_size = 0
+    else:
+        avg_bitmap_size = fuzz.total_bitmap_size / fuzz.bitmap_entry_count
 
-    avg_bitmap_size = fuzz.total_bitmap_size / fuzz.bitmap_entry_count
+
 
     # 基于覆盖率改变分数
     if entry.bitmap_size * 0.3 > avg_bitmap_size:
@@ -36,7 +42,12 @@ def calculate_score(entry, fuzz):
         score *= 0.75
 
     # 基于执行时间改变分数
-    avg_execution_time = fuzz.total_execution_time / fuzz.execution_entry_count
+    avg_execution_time = 0
+    if fuzz.execution_entry_count == 0:
+        avg_execution_time = 0
+    else:
+        avg_execution_time = fuzz.total_execution_time / fuzz.execution_entry_count
+
     if entry.execution_time * 0.1 > avg_execution_time:
         score *= 0.1
     elif entry.execution_time * 0.25 > avg_execution_time:
