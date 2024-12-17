@@ -9,6 +9,7 @@ def perform_dry_run(fuzz):
     :param fuzz: Fuzz实例
     :return: 无
     """
+
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
     # TODO
