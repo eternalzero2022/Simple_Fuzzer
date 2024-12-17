@@ -63,6 +63,9 @@ def fuzz_one(fuzz):
             if fuzz.total_timeout_count <= 100:
                 save_timeout_seed(new_seed,fuzz)
 
+        if not exec_result["new_coverage"]:
+            del new_seed
+
     # 如果没有发现新覆盖，作为最后手段执行 splice 变异
     if not found_new_seed:
         mutated_seed = mutate(original_seed, "splice", fuzz)
@@ -78,12 +81,14 @@ def fuzz_one(fuzz):
         if exec_result["crash"]:
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            save_crash_seed(new_seed,fuzz)
+            if fuzz.total_crash_count <= 100:
+                save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            save_timeout_seed(new_seed,fuzz)
+            if fuzz.total_timeout_count <= 100:
+                save_timeout_seed(new_seed,fuzz)
 
     # print("变异结果：",found_new_seed)
     return found_new_seed

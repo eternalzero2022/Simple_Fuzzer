@@ -110,6 +110,7 @@ def perform_dry_run(fuzz):
             # 关闭共享内存
             if(os.path.isfile(os.path.join(fuzz.in_dir,".temp_seed"))):
                 os.remove(os.path.join(fuzz.in_dir,".temp_seed"))
+            shm.remove()
             shm.detach()
 
 
@@ -227,6 +228,7 @@ def execute_seed(seed, fuzz):
         # 关闭共享内存
         if(os.path.isfile(os.path.join(fuzz.in_dir,".temp_seed"))):
             os.remove(os.path.join(fuzz.in_dir,".temp_seed"))
+        shm.remove()
         shm.detach()
 
     return result_dict

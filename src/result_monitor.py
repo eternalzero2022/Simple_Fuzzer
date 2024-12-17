@@ -158,6 +158,7 @@ def save_data(fuzz):
 
         writer.writerow(stats_data)  # 写入当前的统计数据
 
+
 def save_seed_info(fuzz):
     """
     保存当前fuzz中所有种子的基本信息到内存中，确保每个种子的id唯一。
