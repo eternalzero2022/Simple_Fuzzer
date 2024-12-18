@@ -53,14 +53,14 @@ def fuzz_one(fuzz):
             # 增加崩溃计数
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            if fuzz.total_crash_count <= 100:
+            if fuzz.total_crash_count <= FuzzConstants.max_crash_seeds_saved:
                 save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             # 增加超时计数
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            if fuzz.total_timeout_count <= 100:
+            if fuzz.total_timeout_count <= FuzzConstants.max_timeout_seeds_saved:
                 save_timeout_seed(new_seed,fuzz)
 
         if not exec_result["new_coverage"]:
@@ -81,13 +81,13 @@ def fuzz_one(fuzz):
         if exec_result["crash"]:
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            if fuzz.total_crash_count <= 100:
+            if fuzz.total_crash_count <= FuzzConstants.max_crash_seeds_saved:
                 save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            if fuzz.total_timeout_count <= 100:
+            if fuzz.total_timeout_count <= FuzzConstants.max_timeout_seeds_saved:
                 save_timeout_seed(new_seed,fuzz)
 
     # print("变异结果：",found_new_seed)
