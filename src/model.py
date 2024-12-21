@@ -86,9 +86,9 @@ class Fuzz:
         return True
     
     def remove_seed(self):
-        changed_queue = [seed for seed in self.seed_queue if seed.need_delete==True]
+        changed_queue = [seed for seed in self.seed_queue if seed.need_delete==False]
         self.seed_queue = changed_queue
-        changed_new_queue = [seed for seed in self.new_seed_queue if seed.need_delete==True]
+        changed_new_queue = [seed for seed in self.new_seed_queue if seed.need_delete==False]
         self.new_seed_queue = changed_new_queue
         self.queue_changed = True
 
