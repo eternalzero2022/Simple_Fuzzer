@@ -1,0 +1,470 @@
+-- $Id: testes/errors.lua $
+-- See Copyright Notice in file all.lua
+
+print("testing errors")
+
+local debug = require"debug"
+
+-- avoid problems with 'strict' module (which may generate other error messages)
+local mt = getmetatable(_G) or {}
+local oldmm = mt.__index
+mt.__index = nil
+
+local function checkerr (msg, f, ...)
+  local st, err = pcall(f, ...)
+  assert(not st and string.find(err, msg))
+end
+
+
+local function doit (s)
+  local f, msg = load(s)
+  if not f then return msg end
+  local cond, msg = pcall(f)
+  return (not cond) and msg
+end
+
+
+local function checkmessage (prog, msg, debug)
+  local m = doit(prog)
+  if debug then print(m, msg) end
+  assert(string.find(m, msg, 1, true))
+end
+
+local function checksyntax (prog, extra, token, line)
+  local msg = doit(prog)
+  if not string.find(token, "^<%a") and not string.find(token, "^char%(")
+    then token = "'"..token.."'" end
+  token = string.gsub(token, "(%p)", "%%%1")
+  local pt = string.format([[^%%[string ".*"%%]:%d: .- near %s$]],
+                           line, token)
+  assert(string.find(msg, pt))
+  assert(string.find(msg, msg, 1, true))
+end
+
+
+-- test error message with no extra info
+assert(doit("error('hi', 0)") == 'hi')
+
+-- test error message with no info
+assert(doit("error()") == nil)
+
+
+-- test common errors/errors that crashed in the past
+assert(doit("table.unpack({}, 1, n=2^30)"))
+assert(doit("a=math.sin()"))
+assert(not doit("tostring(1)") and doit("tostring()"))
+assert(doit"tonumber()")
+assert(doit"repeat until 1; a")
+assert(doit"return;;")
+assert(doit"assert(false)")
+assert(doit"assert(nil)")
+assert(doit("function a (... , ...) end"))
+assert(doit("function a (, ...) end"))
+assert(doit("local t={}; t = t[#t] + 1"))
+
+checksyntax([[
+  local a = {4
+
+]], "'}' expected (to close '{' at line 1)", "<eof>", 3)
+
+
+do   -- testing errors in goto/break
+  local function checksyntax (prog, msg, line)
+    local st, err = load(prog)
+    assert(string.find(err, "line " .. line))
+    assert(string.find(err, msg, 1, true))
+  end
+
+  checksyntax([[
+    ::A:: a = 1
+    ::A::
+  ]], "label 'A' already defined", 1)
+
+  checksyntax([[
+    a = 1
+    goto A
+    do ::A:: end
+  ]], "no visible label 'A'", 2)
+
+end
+
+
+if not T then
+  (Message or print)
+    ('\n >>> testC not active: skipping tests for messages in C <<<\n')
+else
+  print "testing memory error message"
+  local a = {}
+  for i = 1, 10000 do a[i] = true end   -- preallocate array
+  collectgarbage()
+  T.totalmem(T.totalmem() + 10000)
+  -- force a memory error (by a small margin)
+  local st, msg = pcall(function()
+    for i = 1, 100000 do a[i] = tostring(i) end
+  end)
+  T.totalmem(0)
+  assert(not st and msg == "not enough" .. " memory")
+
+  -- stack space for luaL_traceback (bug in 5.4.6)
+  local res = T.testC[[
+    # push 16 elements on the stack
+    pushnum 1; pushnum 1; pushnum 1; pushnum 1; pushnum 1;
+    pushnum 1; pushnum 1; pushnum 1; pushnum 1; pushnum 1;
+    pushnum 1; pushnum 1; pushnum 1; pushnum 1; pushnum 1;
+    pushnum 1;
+    # traceback should work with 4 remaining slots
+    traceback xuxu 1;
+    return 1
+  ]]
+  assert(string.find(res, "xuxu.-main chunk"))
+
+  do   -- tests for error messages about extra arguments from __call
+    local function createobj (n)
+      -- function that raises an error on its n-th argument
+      local code = string.format("argerror %d 'msg'", n)
+      local func = T.makeCfunc(code)
+      -- create a chain of 2 __call objects
+      local M = setmetatable({}, {__call = func})
+      M = setmetatable({}, {__call = M})
+      -- put it as a method for a new object
+      return {foo = M}
+    end
+
+  _G.a = createobj(1)   -- error in first (extra) argument
+  checkmessage("a:foo()", "bad extra argument #1")
+
+  _G.a = crering.format('') == "")
+assert(string.format("%c",34)..string.format("%c",48)..string.format("%c",90)..string.format("%c",100) ==
+       string.format("%1c%-c%-1c%c", 34, 48, 90, 100))
+assert(string.format("%s\0 is not \0%s", 'not be', 'be') == 'not be\0 is not \0be')
+assert(string.format("%%%d %010d", 10, 23) == "%10 0000000023")
+assert(tonumber(string.format("%f", 10.3)) == 10.3)
+assert(string.format('"%-50s"', 'a') == '"a' .. string.rep(' ', 49) .. '"')
+
+assert(string.format("-%.20s.20s", string.rep("%", 2000)) ==
+                     "-"..string.rep("%", 20)..".20s")
+assert(string.format('"-%20s.20s"', string.rep("%", 2000)) ==
+       string.format("%q", "-"..string.rep("%", 2000)..".20s"))
+
+do
+  local function checkQ (v)
+    local s = string.format("%q", v)
+    local nv = load("return " .. s)()
+    assert(v == nv and math.type(v) == math.type(nv))
+  end
+  checkQ("\0\0\1\255\u{234}")
+  checkQ(math.maxinteger)
+  checkQ(math.mininteger)
+  checkQ(math.pi)
+  checkQ(0.1)
+  checkQ(true)
+  checkQ(nil)
+  checkQ(false)
+  checkQ(math.huge)
+  checkQ(-math.huge)
+  assert(string.format("%q", 0/0) == "(0/0)")   -- NaN
+  checkerror("no literal", string.format, "%q", {})
+end
+
+assert(string.format("\0%s\0", "\0\0\1") == "\0\0\0\1\0")
+checkerror("contains zeros", string.format, "%10s", "\0")
+
+-- format x tostring
+assert(string.format("%s %s", nil, true) == "nil true")
+assert(string.format("%s %.4s", false, true) == "false true")
+assert(string.format("%.3s %.3s", false, true) == "fal tru")
+local m = setmetatable({}, {__tostring = function () return "hello" end,
+                            __name = "hi"})
+assert(string.format("%s %.10s", m, m) == "hello hello")
+getmetatable(m).__tostring = nil   -- will use '__name' from now on
+assert(string.format("%.4s", m) == "hi: ")
+
+getmetatable(m).__tostring = function () return {} end
+checkerror("'__tostring' must return a string", tostring, m)
+
+
+assert(string.format("%x", 0.0) == "0")
+assert(string.format("%02x", 0.0) == "00")
+assert(string.format("%08X", 0xFFFFFFFF) == "FFFFFFFF")
+assert(string.format("%+08d", 31501) == "+0031501")
+assert(string.format("%+08d", -30927) == "-0030927")
+
+
+do    -- longest number that can be formatted
+  local i = 1
+  local j = 10000
+  while i + 1 < j do   -- binary search for maximum finite float
+    local m = (i + j) // 2
+    if 10^m < math.huge then i = m else j = m end
+  end
+  assert(10^i < math.huge and 10^j == math.huge)
+  local s = string.format('%.99f', -(10^i))
+  assert(string.len(s) >= i + 101)
+  assert(tonumber(s) == -(10^i))
+
+  -- limit for floats
+  assert(10^38 < math.huge)
+  local s = string.format('%.99f', -(10^38))
+  assert(string.len(s) >= 38 + 101)
+  assert(tonumber(s) == -(10^38))
+end
+
+
+-- testing large numbers for format
+do   -- assume at least 32 bits
+  local max, min = 0x7fffffff, -0x80000000    -- "large" for 32 bits
+  assert(string.sub(string.format("%8x", -1), -8) == "ffffffff")
+  assert(string.format("%x", max) == "7fffffff")
+  assert(string.sub(string.format("%x", min), -8) == "80000000")
+  assert(string.format("%d", max) ==  "2147483647")
+  assert(string.format("%d", min) == "-2147483648")
+  assert(string.format("%u", 0xffffffff) == "4294967295")
+  assert(string.format("%o", 0xABCD) == "125715")
+
+  max, min = 0x7fffffffffffffff, -0x8000000000000000
+  if max > 2.0^53 then  -- only for 64 bits
+    assert(string.format("%x", (2^52 | 0) - 1) == "fffffffffffff")
+    assert(string.format("0x%8X", 0x8f000003) == "0x8F000003")
+    assert(string.format("%d", 2^53) == "9007199254740992")
+    assert(string.format("%i", -2^53) == "-9007199254740992")
+    assert(string.format("%x", max) == "7fffffffffffffff")
+    assert(string.format("%x", min) == "8000000000000000")
+    assert(string.format("%d", max) ==  "9223372036854775807")
+    assert(string.format("%d", min) == "-9223372036854775808")
+    assert(string.format("%u", ~(-1 << 64)) == "18446744073709551615")
+    assert(tostring(1234567890123) == '1234567890123')
+  end
+end
+
+
+do print("testing 'format %a %A'")
+  local function matchhexa (n)
+    local s = string.format("%a", n)
+    -- result matches ISO C requirements
+    assert(string.find(s, "^%-?0x[1-9a-f]%.?[0-9a-f]*p[-+]?%d+$"))
+    assert(tonumber(s) == n)  -- and has full precision
+    s = string.format("%A", n)
+    assert(string.find(s, "^%-?0X[1-9A-F]%.?[0-9A-F]*P[-+]?%d+$"))
+    assert(tonumber(s) == n)
+  end
+  for _, n in ipairs{0.1, -0.1, 1/3, -1/3, 1e30, -1e30,
+                     -45/247, 1, -1, 2, -2, 3e-20, -3e-20} do
+    matchhexa(n)
+  end
+
+  assert(string.find(string.format("%A", 0.0), "^0X0%.?0*P%+?0$"))
+  assert(string.find(string.format("%a", -0.0), "^%-0x0%.?0*p%+?0$"))
+
+  if not _port then   -- test inf, -inf, NaN, and -0.0
+    assert(string.find(string.format("%a", 1/0), "^inf"))
+    assert(string.find(string.format("%A", -1/0), "^%-INF"))
+    assert(string.find(string.format("%a", 0/0), "^%-?nan"))
+    assert(string.find(string.format("%a", -0.0), "^%-0x0"))
+  end
+  
+  if not pcall(string.format, "%.3a", 0) then
+    (Message or print)("\n >>> modifiers for format '%a' not available <<<\n")
+  else
+    assert(string.find(string.format("%+.2A", 12), "^%+0X%x%.%x0P%+?%d$"))
+    assert(string.find(string.format("%.4A", -12), "^%-0X%x%.%x000P%+?%d$"))
+  end
+end
+
+
+-- testing some flags  (all these results are required by ISO C)
+assert(string.format("%#12o", 10) == "         012")
+assert(string.format("%#10x", 100) == "      0x64")
+assert(string.format("%#-17X", 100) == "0X64             ")
+assert(string.format("%013i", -100) == "-000000000100")
+assert(string.format("%2.5d", -100) == "-00100")
+assert(string.format("%.u", 0) == "")
+assert(string.format("%+#014.0f", 100) == "+000000000100.")
+assert(string.format("%-16c", 97) == "a               ")
+assert(string.format("%+.3G", 1.5) == "+1.5")
+assert(string.format("%.0s", "alo")  == "")
+assert(string.format("%.s", "alo")  == "")
+
+-- ISO C89 says that "The exponent always contains at least two digits",
+-- but unlike ISO C99 it does not ensure that it contains "only as many
+-- more digits as necessary".
+assert(string.match(string.format("% 1.0E", 100), "^ 1E%+0+2$"))
+assert(string.match(string.format("% .1g", 2^10), "^ 1e%+0+3$"))
+
+
+-- errors in format
+
+local function check (fmt, msg)
+  checkerror(msg, string.format, fmt, 10)
+end
+
+local aux = string.rep('0', 600)
+check("%100.3d", "invalid conversion")
+check("%1"..aux..".3d", "too long")
+check("%1.100d", "invalid conversion")
+check("%10.1"..aux.."004d", "too long")
+check("%t", "invalid conversion")
+check("%"..aux.."d", "too long")
+check("%d %d", "no value")
+check("%010c", "invalid conversion")
+check("%.10c", "invalid conversion")
+check("%0.34s", "invalid conversion")
+check("%#i", "invalid conversion")
+check("%3.1p", "invalid conversion")
+check("%0.s", "invalid conversion")
+check("%10q", "cannot have modifiers")
+check("%F", "invalid conversion")   -- useless and not in C89
+
+
+assert(load("return 1\n--comment without ending EOL")() == 1)
+
+
+checkerror("table expected", table.concat, 3)
+checkerror("at index " .. maxi, table.concat, {}, " ", maxi, maxi)
+-- '%' escapes following minus signal
+checkerror("at index %" .. mini, table.concat, {}, " ", mini, mini)
+assert(table.concat{} == "")
+assert(table.concat({}, 'x') == "")
+assert(table.concat({'\0', '\0\1', '\0\1\2'}, '.\0.') == "\0.\0.\0\1.\0.\0\1\2")
+local a = {}; for i=1,300 do a[i] = "xuxu" end
+assert(table.concat(a, "123").."123" == string.rep("xuxu123", 300))
+assert(table.concat(a, "b", 20, 20) == "xuxu")
+assert(table.concat(a, "", 20, 21) == "xuxuxuxu")
+assert(table.concat(a, "x", 22, 21) == "")
+assert(table.concat(a, "3", 299) == "xuxu3xuxu")
+assert(table.concat({}, "x", maxi, maxi - 1) == "")
+assert(table.concat({}, "x", mini + 1, mini) == "")
+assert(table.concat({}, "x", maxi, mini) == "")
+assert(table.concat({[maxi] = "alo"}, "x", maxi, maxi) == "alo")
+assert(table.concat({[maxi] = "alo", [maxi - 1] = "y"}, "-", maxi - 1, maxi)
+       == "y-alo")
+
+assert(not pcall(table.concat, {"a", "b", {}}))
+
+a = {"a","b","c"}
+assert(table.concat(a, ",", 1, 0) == "")
+assert(table.concat(a, ",", 1, 1) == "a")
+assert(table.concat(a, ",", 1, 2) == "a,b")
+assert(table.concat(a, ",", 2) == "b,c")
+assert(table.concat(a, ",", 3) == "c")
+assert(table.concat(a, ",", 4) == "")
+
+if not _port then
+
+  local locales = { "ptb", "pt_BR.iso88591", "ISO-8859-1" }
+  local function trylocale (w)
+    for i = 1, #locales do
+      if os.setlocale(locales[i], w) then
+        print(string.format("'%s' locale set to '%s'", w, locales[i]))
+        return locales[i]
+      end
+    end
+    print(string.format("'%s' locale not found", w))
+    return false
+  end
+
+  if trylocale("collate")  then
+    assert("alo" < "álo" and "álo" < "amo")
+  end
+
+  if trylocale("ctype") then
+    assert(string.gsub("áéíóú", "%a", "x") == "xxxxx")
+    assert(string.gsub("áÁéÉ", "%l", "x") == "xÁxÉ")
+    assert(string.gsub("áÁéÉ", "%u", "x") == "áxéx")
+    assert(string.upper"áÁé{xuxu}ção" == "ÁÁÉ{XUXU}ÇÃO")
+  end
+
+  os.setlocale("C")
+  assert(os.setlocale() == 'C')
+  assert(os.setlocale(nil, "numeric") == 'C')
+
+end
+
+
+-- bug in Lua 5.3.2
+-- 'gmatch' iterator does not work across coroutines
+do
+  local f = string.gmatch("1 2 3 4 5", "%d+")
+  assert(f() == "1")
+  local co = coroutine.wrap(f)
+  assert(co() == "2")
+end
+
+
+if T==nil then
+  (Message or print)
+     ("\n >>> testC not active: skipping 'pushfstring' tests <<<\n")
+else
+
+  print"testing 'pushfstring'"
+
+  -- formats %U, %f, %I already tested elsewhere
+
+  local blen = 200    -- internal buffer length in 'luaO_pushfstring'
+
+  local function callpfs (op, fmt, n)
+    local x = {T.testC("pushfstring" .. op .. "; return *", fmt, n)}
+    -- stack has code, 'fmt', 'n', and result from operation
+    assert(#x == 4)  -- make sure nothing else was left in the stack
+    return x[4]
+  end
+
+  local function testpfs (op, fmt, n)
+    assert(callpfs(op, fmt, n) == string.format(fmt, n))
+  end
+
+  testpfs("I", "", 0)
+  testpfs("I", string.rep("a", blen - 1), 0)
+  testpfs("I", string.rep("a", blen), 0)
+  testpfs("I", string.rep("a", blen + 1), 0)
+
+  local str = string.rep("ab", blen) .. "%d" .. string.rep("d", blen / 2)
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  str = "%d" .. string.rep("cd", blen)
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  str = string.rep("c", blen - 2) .. "%d"
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  for l = 12, 14 do
+    local str1 = string.rep("a", l)
+    for i = 0, 500, 13 do
+      for j = 0, 500, 13 do
+        str = string.rep("a", i) .. "%s" .. string.rep("d", j)
+        testpfs("S", str, str1)
+        testpfs("S", str, str)
+      end
+    end
+  end
+
+  str = "abc %c def"
+  testpfs("I", str, string.byte("A"))
+  testpfs("I", str, 255)
+
+  str = string.rep("a", blen - 1) .. "%p" .. string.rep("cd", blen)
+  testpfs("P", str, {})
+
+  str = string.rep("%%", 3 * blen) .. "%p" .. string.rep("%%", 2 * blen)
+  testpfs("P", str, {})
+end
+
+if T == nil then
+  (Message or print)('\n >>> testC not active: skipping external strings tests <<<\n')
+else
+  print("testing external strings")
+  local x = T.externKstr("hello")   -- external fixed short string
+  assert(x == "hello")
+  local x = T.externstr("hello")   -- external allocated short string
+  assert(x == "hello")
+  x = string.rep("a", 100)   -- long string
+  local y = T.externKstr(x)   -- external fixed long string
+  assert(y == x)
+  local z = T.externstr(x)   -- external allocated long string
+  assert(z == y)
+end
+
+print('OK')
+

@@ -1,0 +1,4 @@
+    1  2014-01-05 04:16:05.263422 IP6 (hlim 64, nex, ttl 48, id 12336, offset 0, flags [DF], proto PIM (103), length 12336, bad cksum 3030 (->2947)!)
+    48.48.48.48 > 48.48.48.48: PIMv2, length 12316
+	Hello, cksum 0x3030 (unverified)
+	  Unknown Option (12336), length 12336, Value:  [|pimv2]

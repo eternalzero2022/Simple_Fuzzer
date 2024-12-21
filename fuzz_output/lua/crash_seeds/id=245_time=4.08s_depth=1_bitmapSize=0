@@ -1,0 +1,41 @@
+-- $Id: testes/events.lua $
+-- See Copyright Notice in file all.lua
+
+print('testing metatables')
+
+local debug = require'debug'
+
+X = 20; B = 30
+
+_ENV = setmetatable({}, {__index=_G})
+
+collectgarbage()
+
+X = X+10
+assert(X == 30 and _G.X == 20)
+B = false
+assert(B == false)
+_ENV["B"] = undef
+assert(B == 30)
+
+assert(getmfinalization
+  end
+end
+
+
+function M.start ()
+  if not active then
+    active = true
+    setmetatable({}, mt)    -- create initial object
+  end
+end
+
+
+function M.stop ()
+  if active then
+    active = false
+    collectgarbage()   -- call finalizer for the last time
+  end
+end
+
+return M

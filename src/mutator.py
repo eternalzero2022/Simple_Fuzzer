@@ -167,14 +167,14 @@ def decide_mutation_count(score):
 
 
 # # 具体的变异方法（示例与之前类似）
-def bitflip_mutation(seed, L=8, S=8):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
+def bitflip_mutation(seed, L=1, S=1):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
     """位翻转变异"""
     if not seed:
         return seed
     seed = bytearray(seed)
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:
@@ -202,7 +202,7 @@ def arithmetic_mutation(seed, L=8):  # L可能为8 16 32
     step = L // 8
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:
@@ -241,7 +241,7 @@ def interest_mutation(seed, L=8):  # L可能为8 16 32
     step = L // 8
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:
