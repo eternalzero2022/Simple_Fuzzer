@@ -85,13 +85,11 @@ class Fuzz:
                     return False
         return True
     
-    def remove_seed(self,seed_entry):
-        if not isinstance(seed_entry, SeedEntry):
-            raise TypeError('种子必须是QueueEntry类型')
-        if seed_entry in self.seed_queue:
-            self.seed_queue.remove(seed_entry)
-        if seed_entry in self.new_seed_queue:
-            self.new_seed_queue.remove(seed_entry)
+    def remove_seed(self):
+        changed_queue = [seed for seed in self.seed_queue if seed.need_delete==True]
+        self.seed_queue = changed_queue
+        changed_new_queue = [seed for seed in self.new_seed_queue if seed.need_delete==True]
+        self.new_seed_queue = changed_new_queue
         self.queue_changed = True
 
 
@@ -125,6 +123,7 @@ class SeedEntry:
         self.perf_score = 0  # 性能分数
         self.handicap = handicap  #  产生这个种子时当前所处的循环次数，越是晚则越大
         self.file_path = file_path
+        self.need_delete = False
 
     def __eq__(self, value: object) -> bool:
         if isinstance(value,SeedEntry):

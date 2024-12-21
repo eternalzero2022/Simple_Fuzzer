@@ -118,6 +118,13 @@ def main(args):
 
     if fuzz.seed_queue:
         print('已读取到', len(fuzz.seed_queue), '个种子')
+        # i = 0
+        # for i in range(0, len(fuzz.seed_queue)):
+        #     print(f'种子序号:{i} id={fuzz.seed_queue[i].id}')
+
+        # for seed in fuzz.seed_queue:
+        #     print(f'种子id={seed.id}')
+
         fuzz.last_fuzz_finds_count = len(fuzz.seed_queue)
     else:
         print('请提供至少一个有效的初始种子')

@@ -15,14 +15,15 @@ def perform_dry_run(fuzz):
     """
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
-
+    
     for seed in fuzz.seed_queue:
         if not isinstance(seed, SeedEntry):
             raise TypeError('种子必须是SeedEntry类型')
+        
+        print(f"即将执行种子id={seed.id}")
 
         # 构建执行命令，替换输入种子路径
         cmd = fuzz.exec_command
-        print("cmd为：",cmd)
         input_from_file = False
 
         # 判断命令中有没有“@@”字符，如果有的话，在fuzz.in_dir表示的目录下创建一个.seed_tmp的文件
@@ -91,7 +92,8 @@ def perform_dry_run(fuzz):
             else:
                 # print(f"种子 {seed.id} 执行失败，错误码：{result.returncode}")
                 print(f"警告：初始种子id{seed.id}[{seed.file_path}]执行失败，忽略该种子")
-                fuzz.remove_seed(seed)
+                # fuzz.remove_seed(seed)
+                seed.need_delete = True
                 
                 pass
 
@@ -99,12 +101,14 @@ def perform_dry_run(fuzz):
             seed.timeout_count += 1
             # print(f"种子 {seed.id} 执行超时")
             print(f"警告：初始种子id{seed.id}[{seed.file_path}]执行超时，忽略该种子")
-            fuzz.remove_seed(seed)
+            # fuzz.remove_seed(seed)
+            seed.need_delete = True
 
 
         except Exception as e:
             seed.crash_count += 1
-            # print(f"执行种子 {seed.id} 时出错: {str(e)}")
+            print(f"执行种子 {seed.id} 时出错: {str(e)}")
+            seed.need_delete = True
 
         finally:
             # 关闭共享内存
@@ -112,6 +116,9 @@ def perform_dry_run(fuzz):
                 os.remove(os.path.join(fuzz.in_dir,".temp_seed"))
             shm.remove()
             shm.detach()
+
+    # 删除所有需要删除的项
+    fuzz.remove_seed()
 
 
 def execute_seed(seed, fuzz):
