@@ -16,6 +16,13 @@ def perform_dry_run(fuzz):
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
     
+    # 创建共享内存
+    key = 5678
+    shm_size = FuzzConstants.shm_size
+    fuzz.shm = sysv_ipc.SharedMemory(key,sysv_ipc.IPC_CREAT, size=shm_size)
+    shm_id = fuzz.shm.id
+    os.environ[FuzzConstants.shm_env_var] = str(shm_id)
+    
     for seed in fuzz.seed_queue:
         if not isinstance(seed, SeedEntry):
             raise TypeError('种子必须是SeedEntry类型')
@@ -37,18 +44,14 @@ def perform_dry_run(fuzz):
             # print("替换后cmd为：",cmd)
 
 
-        # 创建共享内存
-        key = 5678
-        shm_size = FuzzConstants.shm_size
-        shm = sysv_ipc.SharedMemory(key,sysv_ipc.IPC_CREAT, size=shm_size)
-        shm_id = shm.id
+
 
         # 将共享内存区域置为0
         empty_data = b'\x00' * shm_size
-        shm.write(empty_data)
+        fuzz.shm.write(empty_data)
 
         # 设置环境变量，目标程序会读取这个环境变量来获取共享内存地址
-        os.environ[FuzzConstants.shm_env_var] = str(shm_id)
+
 
         try:
 
@@ -69,7 +72,7 @@ def perform_dry_run(fuzz):
                 fuzz.total_execution_time += exec_time
                 fuzz.execution_entry_count += 1
                 # 假设目标程序会在共享内存中存储覆盖率信息
-                message = shm.read()
+                message = fuzz.shm.read()
 
                 # coverage_data就是种子覆盖率图
                 coverage_data = message[:shm_size]
@@ -114,8 +117,8 @@ def perform_dry_run(fuzz):
             # 关闭共享内存
             if(os.path.isfile(os.path.join(fuzz.in_dir,".temp_seed"))):
                 os.remove(os.path.join(fuzz.in_dir,".temp_seed"))
-            shm.remove()
-            shm.detach()
+            # shm.remove()
+            # shm.detach()
 
     # 删除所有需要删除的项
     fuzz.remove_seed()
@@ -137,25 +140,26 @@ def execute_seed(seed, fuzz):
     
     fuzz.exec_called_times += 1
 
-    # 创建共享内存
-    key = 5678
-    shm_size = 256 * 256
-    shm = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT, size=shm_size)
-    shm_id = shm.id
-
-    # 将共享内存区域置为0
-    empty_data = b'\x00' * shm_size
-    shm.write(empty_data)
-
-    # 设置环境变量，目标程序会读取这个环境变量来获取共享内存地址
-    os.environ[FuzzConstants.shm_env_var] = str(shm_id)
-
-    # 初始化结果字典
-    result_dict = {"new_coverage": False, "crash": False, "timeout": False}
-
-    input_from_file = False
-
     try:
+        # 创建共享内存
+        # key = 5678
+        shm_size = 256 * 256
+        # shm = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT, size=shm_size)
+        shm_id = fuzz.shm.id
+
+        # 将共享内存区域置为0
+        empty_data = b'\x00' * shm_size
+        fuzz.shm.write(empty_data)
+
+        # 设置环境变量，目标程序会读取这个环境变量来获取共享内存地址
+        # os.environ[FuzzConstants.shm_env_var] = str(shm_id)
+
+        # 初始化结果字典
+        result_dict = {"new_coverage": False, "crash": False, "timeout": False}
+
+        input_from_file = False
+
+
         # 构建执行命令
         cmd = fuzz.exec_command
 
@@ -169,6 +173,9 @@ def execute_seed(seed, fuzz):
             cmd = cmd.replace("@@",filepath)
 
         start_time = time.time()
+
+        shm_id = fuzz.shm.id
+        os.environ[FuzzConstants.shm_env_var] = str(shm_id)
 
         # 执行目标程序，捕获输出和错误
         process = subprocess.run(cmd, shell=True, input=seed.seed, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -186,7 +193,7 @@ def execute_seed(seed, fuzz):
             fuzz.execution_entry_count += 1
 
             # 假设目标程序会在共享内存中存储覆盖率信息
-            message = shm.read()
+            message = fuzz.shm.read()
             coverage_data = message[:shm_size]
 
             # 计算覆盖率
@@ -235,7 +242,7 @@ def execute_seed(seed, fuzz):
         # 关闭共享内存
         if(os.path.isfile(os.path.join(fuzz.in_dir,".temp_seed"))):
             os.remove(os.path.join(fuzz.in_dir,".temp_seed"))
-        shm.remove()
-        shm.detach()
+        # shm.remove()
+        # shm.detach()
 
     return result_dict

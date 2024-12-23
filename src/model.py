@@ -53,6 +53,7 @@ class Fuzz:
         self.status_show_count = 0;
         self.exec_called_times = 0; # 调用执行组件总次数
         self.current_mutate_strategy = "-" # 当前正在使用的变异策略
+        self.shm = None
         
 
     stop_fuzzing = False  # 停止fuzzing标志

@@ -1,5 +1,8 @@
-# 使用 Python 3.10.12 作为基础镜像
-FROM aflplusplus/aflplusplus
+# 使用 ubuntu:22.04 作为基础镜像
+FROM ubuntu:22.04
+
+# 设置环境变量以避免交互式提示
+ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装 make 和 build-essential
 RUN apt-get update && apt-get install -y python3 python3-pip cmake libtool make build-essential llvm clang file binutils && apt-get clean
@@ -10,7 +13,7 @@ RUN mkdir /SimpleFuzzer
 WORKDIR /SimpleFuzzer
 
 # 复制当前目录的内容到 /SimpleFuzzer 目录
-COPY . .
+COPY . /SimpleFuzzer
 
 # 安装 requirements.txt 中的依赖项
 RUN pip install --no-cache-dir -r requirements.txt

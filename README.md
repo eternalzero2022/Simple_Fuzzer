@@ -21,6 +21,34 @@
 
 ## 快速开始
 ### 环境构建
+环境构建前，需要先确保已经拥有了经过afl插桩编译过的程序。如果程序还没有经过afl插桩编译，需要**先将项目目录下的Dockerfile修改为如下内容**。如果已经拥有afl插桩编译过的程序则**可跳过**修改Dockerfile。
+```
+# 使用 Python 3.10.12 作为基础镜像
+FROM aflplusplus/aflplusplus
+
+# 安装 make 和 build-essential
+RUN apt-get update && apt-get install -y python3 python3-pip cmake libtool make build-essential llvm clang file binutils && apt-get clean
+
+RUN mkdir /SimpleFuzzer
+
+# 设置工作目录
+WORKDIR /SimpleFuzzer
+
+# 复制当前目录的内容到 /SimpleFuzzer 目录
+COPY . .
+
+# 安装 requirements.txt 中的依赖项
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 设置环境变量
+ENV CC=/AFLplusplus/afl-cc
+ENV CXX=/AFLplusplus/afl-cc
+
+ENTRYPOINT ["/bin/bash"]
+
+```
+
+
 快速打包为Docker镜像：
 ```
 docker build -t simplefuzzer:latest .
@@ -35,7 +63,9 @@ pip install -r requirements.txt
 ```
 
 ### AFL插桩编译
-在使用simplefuzzer前，需要确保待测程序已经经过afl插桩编译。如果还未插桩编译，docker环境中也配置了afl的编译环境，AFL++相关组件位于/AFLplusplus下。
+注意：如果你已经拥有了使用afl插桩编译的程序，或在上一步中没有修改Dockerfile，则跳过此板块，进入“执行模糊测试”板块。
+
+在使用simplefuzzer前，需要确保待测程序已经经过afl插桩编译。如果还未插桩编译，docker环境中也配置了afl的编译环境（使用上一板块中修改过后的Dockerfile进行构建），AFL++相关组件位于/AFLplusplus下。
 
 在docker容器中使用cmake或autotools编译时，自动使用afl-cc插桩编译，环境已经配置好了对应的环境变量。如果想要切换其它编译组件，只需要修改环境变量CC和CXX的值为对应编译组件即可。例如，如果希望使用afl-clang-fast编译，只需要执行如下命令：
 ```
@@ -48,6 +78,11 @@ export CXX=/AFLplusplus/afl-clang-fast
 python3 fuzz.py -i <seeds_directory> --cmd="<program_start_command>"
 ```
 只需要将其中的seeds_directory替换为种子文件路径、将program_start_command替换为待测程序启动命令即可。
+
+项目提供了一个非常简单的程序和种子文件，只需要复制以下代码即可执行：
+```
+python3 fuzz.py -i ./seeds_example  --cmd="./program/calculator"
+```
 
 默认会在`./fuzz_output/default`下保存执行结果。该目录下`stats.csv`保存模糊测试执行过程中的状态记录，`crash_seeds`和`timeout_seeds`分别保存产生崩溃的种子和产生超时的种子，plot目录下存储本次执行的覆盖率随时间变化曲线图。
 
@@ -86,6 +121,9 @@ python3 fuzz.py -i program_examples/compiled/src/mjs-2.20.0/tests -o my_outputs 
 |max_timeout_seeds_saved|执行结果目录下最多可以保存的超时种子的数量|100|
 |exec_timeout|测试用例执行超时判断标准（单位：秒）|3|
 |same_score|是否为每个种子分配相同变异机会|False|
+
+### 更多示例程序
+除了项目目录下`program`下的简单程序`calculator`和初始种子目录`seeds_example`外，项目还额外提供了十个真实世界中的程序，供程序进行模糊测试使用。
 
 ### 项目类层次设计
 整体来看，fuzz.py和main.py位于类层次的上层，统筹整个模糊程序的启动和循环流转；mutator.py位于类层次的中层，负责处理模糊测试中单个种子的多个业务；seed_scheduler.py、power_scheduler.py、executor.py、result_monitor.py、evaluator.py位于类层次的较低层，负责处理模糊测试中的某个具体业务，而fuzzconstants.py、model.py位于类层次的最底层，是对数据类型的定义和常量的定义，被其它组件所依赖。
