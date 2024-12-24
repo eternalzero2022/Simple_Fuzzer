@@ -118,6 +118,13 @@ def main(args):
 
     if fuzz.seed_queue:
         print('已读取到', len(fuzz.seed_queue), '个种子')
+        # i = 0
+        # for i in range(0, len(fuzz.seed_queue)):
+        #     print(f'种子序号:{i} id={fuzz.seed_queue[i].id}')
+
+        # for seed in fuzz.seed_queue:
+        #     print(f'种子id={seed.id}')
+
         fuzz.last_fuzz_finds_count = len(fuzz.seed_queue)
     else:
         print('请提供至少一个有效的初始种子')
@@ -137,6 +144,14 @@ def main(args):
         perform_dry_run(fuzz)
 
         print(f"种子队列长度：",len(fuzz.seed_queue))
+
+        if len(fuzz.seed_queue == 0):
+            print("错误：没有可执行的初始种子。程序自动退出")
+            if fuzz.shm is not None:
+                fuzz.shm.remove()
+                fuzz.shm.detach()
+            unlock_directory(os.path.join(fuzz.out_dir, fuzz.task_name))
+            exit(0)
 
         print('即将进行模糊测试')
         time.sleep(1)
@@ -202,9 +217,13 @@ def main(args):
                 last_time = int(current_time)
 
     except Exception as e:
+        print("执行过程中发生错误：")
         print(e)
     finally:
         print('即将进行模糊测试结束工作')
+        if fuzz.shm is not None:
+            fuzz.shm.remove()
+            fuzz.shm.detach()
         display_result_info(fuzz)
         unlock_directory(os.path.join(fuzz.out_dir, fuzz.task_name))
         save_data(fuzz)

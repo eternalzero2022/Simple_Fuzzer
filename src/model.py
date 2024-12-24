@@ -53,6 +53,7 @@ class Fuzz:
         self.status_show_count = 0;
         self.exec_called_times = 0; # 调用执行组件总次数
         self.current_mutate_strategy = "-" # 当前正在使用的变异策略
+        self.shm = None
         
 
     stop_fuzzing = False  # 停止fuzzing标志
@@ -85,13 +86,11 @@ class Fuzz:
                     return False
         return True
     
-    def remove_seed(self,seed_entry):
-        if not isinstance(seed_entry, SeedEntry):
-            raise TypeError('种子必须是QueueEntry类型')
-        if seed_entry in self.seed_queue:
-            self.seed_queue.remove(seed_entry)
-        if seed_entry in self.new_seed_queue:
-            self.new_seed_queue.remove(seed_entry)
+    def remove_seed(self):
+        changed_queue = [seed for seed in self.seed_queue if seed.need_delete==False]
+        self.seed_queue = changed_queue
+        changed_new_queue = [seed for seed in self.new_seed_queue if seed.need_delete==False]
+        self.new_seed_queue = changed_new_queue
         self.queue_changed = True
 
 
@@ -125,6 +124,7 @@ class SeedEntry:
         self.perf_score = 0  # 性能分数
         self.handicap = handicap  #  产生这个种子时当前所处的循环次数，越是晚则越大
         self.file_path = file_path
+        self.need_delete = False
 
     def __eq__(self, value: object) -> bool:
         if isinstance(value,SeedEntry):

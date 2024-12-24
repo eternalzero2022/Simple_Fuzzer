@@ -1,0 +1,693 @@
+-- $Id: testes/api.lua $
+-- See Copyright Notice in file all.lua
+
+if T==nil then
+  (Message or print)('\n >>> testC not active: skipping API tests <<<\n')
+  return
+end
+
+local debug = require "debug"
+
+local pack = table.pack
+
+
+-- standard error message for memory errors
+local MEMERRMSG = "not enough memory"
+
+local function tcheck (t1, t2)
+  assert(t1.n == (t2.n or #t2) + 1)
+  for i = 2, t1.n do assert(t1[i] == t2[i - 1]) end
+end
+
+
+local function checkerr (msg, f, ...)
+  local stat, err = pcall(f, ...)
+  assert(not stat and string.find(err, msg))
+end
+
+
+print('testing C API')
+
+local a = T.testC("pushvalue R; return 1")
+assert(a == debug.getregistry())
+
+
+-- absindex
+assert(T.testC("settop 10; absindex -1; return 1") == 10)
+assert(T.testC("settop 5; absindex -5; return 1") == 1)
+assert(T.testC("settop 10; absindex 1; return 1") == 1)
+assert(T.testC("settop 10; absindex R; return 1") < -10)
+
+-- testing alignment
+a = T.d2s(12458954321123.0)
+assert(a == string.pack("d", 12458954321123.0))
+assert(T.s2d(a) == 12458954321123.0)
+
+local a,b,c = T.testC("pushnum 1; pushnum 2; pushnum 3; return 2")
+assert(a == 2 and b == 3 and not c)
+
+local f = T.makeCfunc("pushnum 1; pushnum 2; pushnum 3; return 2")
+a,b,c = f()
+assert(a == 2 and b == 3 and not c)
+
+-- test that all trues are equal
+a,b,c = T.testC("pushbool 1; pushbool 2; pushbool 0; return 3")
+assert(a == b and a == true and c == false)
+a,b,c = T.testC"pushbool 0; pushbool 10; pushnil;\
+                      tobool -3; tobool -3; tobool -3; return 3"
+assert(a==false and b==true and c==false)
+
+
+a,b,c = T.testC("gettop; return 2", 10, 20, 30, 40)
+assert(a == 40 and b == 5 and not c)
+
+local t = pack(T.testC("settop 5; return *", 2, 3))
+tcheck(t, {n=4,2,3})
+
+t = pack(T.testC("settop 0; settop 15; return 10", 3, 1, 23))
+assert(t.n == 10 and t[1] == nil and t[10] == nil)
+
+t = pack(T.testC("remove -2; return *", 2, 3, 4))
+tcheck(t, {n=2,2,4})
+
+t = pack(T.testC("insert -1; return *", 2, 3))
+tcheck(t, {n=2,2,3})
+
+t = pack(T.testC("insert 3; return *", 2, 3, 4, 5))
+tcheck(t, {n=4,2,5,3,4})
+
+t = pack(T.testC("replace 2; return *", 2, 3, 4, 5))
+tcheck(t, {n=3,5,3,4})
+
+t = pack(T.testC("replace -2; return *", 2, 3, 4, 5))
+tcheck(t, {n=3,2,3,5})
+
+t = pack(T.testC("remove 3; return *", 2, 3, 4, 5))
+tcheck(t, {n=3,2,4,5})
+
+t = pack(T.testC("copy 3 4; return *", 2, 3, 4, 5))
+tcheck(t, {n=4,2,3,3,5})
+
+t = pack(T.testC("copy -3 -1; return *", 2, 3, 4, 5))
+tcheck(t, {n=4,2,3,4,3})
+
+do   -- testing 'rotate'
+  local t = {10, 20, 30, 40, 50, 60}
+  for i = -6, 6 do
+    local s = string.format("rotate 2 %d; return 7", i)
+    local t1 = pack(T.testC(s, 10, 20, 30, 40, 50, 60))
+    tcheck(t1, t)
+    table.insert(t, 1, table.remove(t))
+  end
+
+  t = pack(T.testC("rotate -2 1; return *", 10, 20, 30, 40))
+  tcheck(t, {10, 20, 40, 30})
+  t = pack(T.testC("rotate -2 -1; return *", 10, 20, 30, 40))
+  tcheck(t, {10, 20, 40, 30})
+
+  -- some corner cases
+  t = pack(T.testC("rotate -1 0; return *", 10, 20, 30, 40))
+  tcheck(t, {10, 20, 30, 40})
+  t = pack(T.testC("rotate -1 1; return *", 10, 20, 30, 40))
+  tcheck(t, {10, 20, 30, 40})
+  t = pack(T.testC("rotate 5 -1; return *", 10, 20, 30, 40))
+  tcheck(t, {10, 20, 30, 40})
+end
+
+
+-- testing warnings
+T.testC([[
+  warningC "#This shold be a"
+  warningC " single "
+  warning "warning"
+  warningC "#This should be "
+  warning "another one"
+]])
+
+
+-- testing message handlers
+do
+  local f = T.makeCfunc[[
+    getglobal error
+    pushstring bola
+    pcall 1 1 1   # call 'error' with given handler
+    pushstatus
+    return 2     # return error message and status
+  ]]
+
+  local msg, st = f(string.upper)   -- function handler
+  assert(st == "ERRRUN" and msg == "BOLA")
+  local msg, st = f(string.len)     -- function handler
+  assert(st == "ERRRUN" and msg == 4)
+
+end
+
+t = pack(T.testC("insert 3; pushvalue 3; remove 3; pushvalue 2; remove 2; \
+                  insert 2; pushvalue 1; remove 1; insert 1; \
+      insert -2; pushvalue -2; remove -3; return *",
+      2, 3, 4, 5, 10, 40, 90))
+tcheck(t, {n=7,2,3,4,5,10,40,90})
+
+t = pack(T.testC("concat 5; return *", "alo", 2, 3, "joao", 12))
+tcheck(t, {n=1,"alo23joao12"})
+
+-- testing MULTRET
+t = pack(T.testC("call 2,-1; return *",
+     function (a,b) return 1,2,3,4,a,b end, "alo", "joao"))
+tcheck(t, {n=6,1,2,3,4,"alo", "joao"})
+
+do  -- test returning more results than fit in the caller stack
+  local a = {}
+  for i=1,1000 do a[i] = true end; a[999] = 10
+  local b = T.testC([[pcall 1 -1 0; pop 1; tostring -1; return 1]],
+                    table.unpack, a)
+  assert(b == "10")
+end
+
+
+do  -- testing multipe returns
+  local function foo (n)
+    if n > 0 then return n, foo(n - 1) end
+  end
+
+  local t = {T.testC("call 1 10; return 10", foo, 20)}
+  assert(t[1] == 20 and t[10] == 11 and t[11] == nil)
+
+  local t = table.pack(T.testC("call 1 10; return 10", foo, 2))
+  assert(t[1] == 2 and t[2] == 1 and t[3] == nil and t.n == 10)
+
+  local t = {T.testC([[
+    checkstack 300 "error"; call 1 250; return 250]], foo, 250)}
+  assert(t[1] == 250 and t[250] == 1 and t[251] == nil)
+end
+
+
+-- testing globals
+_G.AA = 14; _G.BB = "a31"
+local a = {T.testC[[
+  getglobal AA;
+  getglobal BB;
+  getglobal BB;
+  setglobal AA;
+  return *
+]]}
+assert(a[2] == 14 and a[3] == "a31" and a[4] == nil and _G.AA == "a31")
+
+_G.AA, _G.BB = nil
+
+-- testing arith
+assert(T.testC("pushnum 10; pushnum 20; arith /; return 1") == 0.5)
+assert(T.testC("pushnum 10; pushnum 20; arith -; return 1") == -10)
+assert(T.testC("pushnum 10; pushnum -20; arith *; return 1") == -200)
+assert(T.testC("pushnum 10; pushnum 3; arith ^; return 1") == 1000)
+assert(T.testC("pushnum 10; pushstring 20; arith /; return 1") == 0.5)
+assert(T.testC("pushstring 10; pushnum 20; arith -; return 1") == -10)
+assert(T.testC("pushstring 10; pushstring -20; arith *; return 1") == -200)
+assert(T.testC("pushstring 10; pushstring 3; arith ^; return 1") == 1000)
+assert(T.testC("arith /; return 1", 2, 0) == 10.0/0)
+a = T.testC("pushnum 10; pushint 3; arith \\; return 1")
+assert(a == 3.0 and math.type(a) == "float")
+a = T.testC("pushint 10; pushint 3; arith \\; return 1")
+assert(a == 3 and math.type(a) == "integer")
+a = assert(T.testC("pushint 10; pushint 3; arith +; return 1"))
+assert(a == 13 and math.type(a) == "integer")
+a = assert(T.testC("pushnum 10; pushint 3; arith +; return 1"))
+assert(a == 13 and math.type(a) == "float")
+a,b,c = T.testC([[pushnum 1;
+                  pushstring 10; arith _;
+                  pushstring 5; return 3]])
+assert(a == 1 and b == -10 and c == "5")
+local mt = {
+      __add = function (a,b) return setmetatable({a[1] + b[1]}, mt) end,
+      __mod = function (a,b) return setmetatable({a[1] % b[1]}, mt) end,
+      __unm = function (a) return setmetatable({a[1]* 2}, mt) end}
+a,b,c = setmetatable({4}, mt),
+        setmetatable({8}, mt),
+        setmetatable({-3}, mt)
+local x,y,z = T.testC("arith +; return 2", 10, a, b)
+assert(x == 10 and y[1] == 12 and z == nil)
+assert(T.testC("arith %; return 1", a, c)[1] == 4%-3)
+assert(T.testC("arith _; arith +; arith %; return 1", b, a, c)[1] ==
+               8 % (4 + (-3)*2))
+
+-- errors in arithmetic
+checkerr("divide by zero", T.testC, "arith \\", 10, 0)
+checkerr("%%0", T.testC, "arith %", 10, 0)
+
+
+-- testing lessthan and lessequal
+assert(T.testC("compare LT 2 5, return 1", 3, 2, 2, 4, 2, 2))
+assert(T.testC("compare LE 2 5, return 1", 3, 2, 2, 4, 2, 2))
+assert(not T.testC("compare LT 3 4, return 1", 3, 2, 2, 4, 2, 2))
+assert(T.testC("compare LE 3 4, return 1", 3, 2, 2, 4, 2, 2))
+assert(T.testC("compare LT 5 2, return 1", 4, 2, 2, 3, 2, 2))
+assert(not T.testC("compare LT 2 -3, return 1", "4", "2", "2", "3", "2", "2"))
+assert(not T.testC("compare LT -3 2, return 1", "3", "2", "2", "4", "2", "2"))
+
+-- non-valid indices produce false
+assert(not T.testC("compare LT 1 4, return 1"))
+assert(not T.testC("compare LE 9 1, return 1"))
+assert(not T.testC("compare EQ 9 9, return 1"))
+
+local b = {__lt = function (a,b) return a[1] < b[1] end}
+local a1,a3,a4 = setmetatable({1}, b),
+                 setmetatable({3}, b),
+                 setmetatable({4}, b)
+assert(T.testC("compare LT 2 5, return 1", a3, 2, 2, a4, 2, 2))
+assert(T.testC("compare LE 2 5, return 1", a3, 2, 2, a4, 2, 2))
+assert(T.testC("compare LT 5 -6, return 1", a4, 2, 2, a3, 2, 2))
+a,b = T.testC("compare LT 5 -6, return 2", a1, 2, 2, a3, 2, 20)
+assert(a == 20 and b == false)
+a,b = T.testC("compare LE 5 -6, return 2", a1, 2, 2, a3, 2, 20)
+assert(a == 20 and b == false)
+a,b = T.testC("compare LE 5 -6, return 2", a1, 2, 2, a1, 2, 20)
+assert(a == 20 and b == true)
+
+
+do  -- testing lessthan and lessequal with metamethods
+  local mt = {__lt = function (a,b) return a[1] < b[1] end,
+              __le = function (a,b) return a[1] <= b[1] end,
+              __eq = function (a,b) return a[1] == b[1] end}
+  local function O (x)
+    return setmetatable({x}, mt)
+  end
+
+  local a, b = T.testC("compare LT 2 3; pushint 10; return 2", O(1), O(2))
+  assert(a == true and b == 10)
+  local a, b = T.testC("compare LE 2 3; pushint 10; return 2", O(3), O(2))
+  assert(a == false and b == 10)
+  local a, b = T.testC("compare EQ 2 3; pushint 10; return 2", O(3), O(3))
+  assert(a == true and b == 10)
+end
+
+-- testing length
+local t = setmetatable({x = 20}, {__len = function (t) return t.x end})
+a,b,c = T.testC([[
+   len 2;
+   Llen 2;
+   objsize 2;
+   return 3
+]], t)
+assert(a == 20 and b == 20 and c == 0)
+
+t.x = "234"; t[1] = 20
+a,b,c = T.testC([[
+   len 2;
+   Llen 2;
+   objsize 2;
+   return 3
+]], t)
+assert(a == "234" and b == 234 and c == 1)
+
+t.x = print; t[1] = 20
+a,c = T.testC([[
+   len 2;
+   objsize 2;
+   return 2
+]], t)
+assert(a == print and c == 1)
+
+
+-- testing __concat
+
+a = setmetatable({x="u"}, {__concat = function (a,b) return a.x..'.'..b.x end})
+x,y = T.testC([[
+  pushnum 5
+  pushvalue 2;
+  pushvalue 2;
+  concat 2;
+  pushvalue -2;
+  return 2;
+]], a, a)
+assert(x == a..a and y == 5)
+
+-- concat with 0 elements
+assert(T.testC("concat 0; return 1") == "")
+
+-- concat with 1 element
+assert(T.testC("concat 1; return 1", "xuxu") == "xuxu")
+
+
+
+-- testing lua_is
+
+local function B (x) return x and 1 or 0 end
+
+local function count (x, n)
+  n = n or 2
+  local prog = [[
+    isnumber %d;
+    isstring %d;
+    isfunction %d;
+    iscfunction %d;
+    istabl(0))' %s > %s", prog, out)
+checkout("0.0\nALO ALO\t20\n")
+
+
+-- test module names with version sufix ("libs/lib2-v2")
+RUN("env LUA_CPATH='./libs/?.so' lua -l lib2-v2 -e 'print(lib2.id())' > %s",
+    out)
+checkout("true\n")
+
+
+-- test 'arg' table
+local a = [[
+  assert(#arg == 3 and arg[1] == 'a' and
+         arg[2] == 'b' and arg[3] == 'c')
+  assert(arg[-1] == '--' and arg[-2] == "-e " and arg[-3] == '%s')
+  assert(arg[4] == undef and arg[-4] == undef)
+  local a, b, c = ...
+  assert(... == 'a' and a == 'a' and b == 'b' and c == 'c')
+]]
+a = string.format(a, progname)
+prepfile(a)
+RUN('lua "-e " -- %s a b c', prog)   -- "-e " runs an empty command
+
+-- test 'arg' availability in libraries
+prepfile"assert(arg)"
+prepfile("assert(arg)", false, otherprog)
+RUN('env LUA_PATH="?;;" lua -l%s - < %s', prog, otherprog)
+
+-- test messing up the 'arg' table
+RUN('echo "print(...)" | lua -e "arg[1] = 100" - > %s', out)
+checkout("100\n")
+NoRun("'arg' is not a table", 'echo "" | lua -e "arg = 1" -')
+
+-- test error in 'print'
+RUN('echo 10 | lua -e "print=nil" -i > /dev/null 2> %s', out)
+assert(string.find(getoutput(), "error calling 'print'"))
+
+-- test 'debug.debug'
+RUN('echo "io.stderr:write(1000)\ncont" | lua -e "require\'debug\'.debug()" 2> %s', out)
+checkout("lua_debug> 1000lua_debug> ")
+
+do  -- test warning for locals
+  RUN('echo "  		local x" | lua -i > %s 2>&1', out)
+  assert(string.find(getoutput(), "warning: "))
+
+  RUN('echo "local1 = 10\nlocal1 + 3" | lua -i > %s 2>&1', out)
+  local t = getoutput()
+  assert(not string.find(t, "warning"))
+  assert(string.find(t, "13"))
+end
+
+print("testing warnings")
+
+-- no warnings by default
+RUN('echo "io.stderr:write(1); warn[[XXX]]" | lua 2> %s', out)
+checkout("1")
+
+prepfile[[
+warn("@allow")               -- unknown control, ignored
+warn("@off", "XXX", "@off")  -- these are not control messages
+warn("@off")                 -- this one is
+warn("@on", "YYY", "@on")    -- not control, but warn is off
+warn("@off")                 -- keep it off
+warn("@on")                  -- restart warnings
+warn("", "@on")              -- again, no control, real warning
+warn("@on")                  -- keep it "started"
+warn("Z", "Z", "Z")          -- common warning
+]]
+RUN('lua -W %s 2> %s', prog, out)
+checkout[[
+Lua warning: @offXXX@off
+Lua warning: @on
+Lua warning: ZZZ
+]]
+
+prepfile[[
+warn("@allow")
+-- create two objects to be finalized when closing state
+-- the errors in the finalizers must generate warnings
+u1 = setmetatable({}, {__gc = function () error("XYZ") end})
+u2 = setmetatable({}, {__gc = function () error("ZYX") end})
+]]
+RUN('lua -W %s 2> %s', prog, out)
+checkprogout("ZYX)\nXYZ)\n")
+
+-- bug since 5.2: finalizer called when closing a state could
+-- subvert finalization order
+prepfile[[
+-- should be called last
+print("creating 1")
+setmetatable({}, {__gc = function () print(1) end})
+
+print("creating 2")
+setmetatable({}, {__gc = function ()
+  print("2")
+  print("creating 3")
+  -- this finalizer should not be called, as object will be
+  -- created after 'lua_close' has been called
+  setmetatable({}, {__gc = function () print(3) end})
+  print(collectgarbage() or false)    -- cannot call collector here
+  os.exit(0, true)
+end})
+]]
+RUN('lua -W %s > %s', prog, out)
+checkout[[
+creating 1
+creating 2
+2
+creating 3
+false
+1
+]]
+
+
+-- test many arguments
+prepfile[[print(({...})[30])]]
+RUN('lua %s %s > %s', prog, string.rep(" a", 30), out)
+checkout("a\n")
+
+RUN([[lua "-eprint(1)" -ea=3 -e "print(a)" > %s]], out)
+checkout("1\n3\n")
+
+-- test iteractive mode
+prepfile[[
+(6*2-6) -- ===
+a =
+10
+print(a)
+a]]
+RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
+checkprogout("6\n10\n10\n\n")
+
+prepfile("a = [[b\nc\nd\ne]]\na")
+RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
+checkprogout("b\nc\nd\ne\n\n")
+
+-- input interrupted in continuation line
+prepfile("a.\n")
+RUN([[lua -i < %s > /dev/null 2> %s]], prog, out)
+checkprogout("near <eof>\n")
+
+local prompt = "alo"
+prepfile[[ --
+a = 2
+]]
+RUN([[lua "-e_PROMPT='%s'" -i < %s > %s]], prompt, prog, out)
+local t = getoutput()
+assert(string.find(t, prompt .. ".*" .. prompt .. ".*" .. prompt))
+
+-- using the prompt default
+prepfile[[ --
+a = 2
+]]
+RUN([[lua -i < %s > %s]], prog, out)
+local t = getoutput()
+prompt = "> "    -- the default
+assert(string.find(t, prompt .. ".*" .. prompt .. ".*" .. prompt))
+
+
+-- non-string prompt
+prompt = [[
+  local C = 'X';
+   _PROMPT=setmetatable({},{__tostring = function ()
+     C = C .. 'X'; return C end})
+]]
+prepfile[[ --
+a = 2
+]]
+RUN([[lua -e "%s" -i < %s > %s]], prompt, prog, out)
+local t = getoutput()
+-- skip version line and then check the presence of the three prompts
+assert(string.find(t, "^.-\nXX[^\nX]*\n?XXX[^\nX]*\n?XXXX\n?$"))
+
+
+-- test for error objects
+prepfile[[
+debug = require "debug"
+m = {x=0}
+setmetatable(m, {__tostring = function(x)
+  return tostring(debug.getinfo(4).currentline + x.x)
+end})
+error(m)
+]]
+NoRun(progname .. ": 6\n", [[lua %s]], prog)
+
+prepfile("error{}")
+NoRun("error object is a table value", [[lua %s]], prog)
+
+
+-- chunk broken in many lines
+local s = [=[ --
+function f ( x )
+  local a = [[
+xuxu
+]]
+  local b = "\
+xuxu\n"
+  if x == 11 then return 1 + 12 , 2 + 20 end  --[[ test multiple returns ]]
+  return x + 1
+  --\\
+end
+return( f( 100 ) )
+assert( a == b )
+do return f( 11 ) end  ]=]
+s = string.gsub(s, ' ', '\n\n')   -- change all spaces for newlines
+prepfile(s)
+RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
+checkprogout("101\n13\t22\n\n")
+
+prepfile[[#comment in 1st line without \n at the end]]
+RUN('lua %s', prog)
+
+-- first-line comment with binary file
+prepfile("#comment\n" .. string.dump(load("print(3)")), true)
+RUN('lua %s > %s', prog, out)
+checkout('3\n')
+
+-- close Lua with an open file
+prepfile(string.format([[io.output(%q); io.write('alo')]], out))
+RUN('lua %s', prog)
+checkout('alo')
+
+-- bug in 5.2 beta (extra \0 after version line)
+RUN([[lua -v  -e"print'hello'" > %s]], out)
+t = getoutput()
+assert(string.find(t, "PUC%-Rio\nhello"))
+
+
+-- testing os.exit
+prepfile("os.exit(nil, true)")
+RUN('lua %s', prog)
+prepfile("os.exit(0, true)")
+RUN('lua %s', prog)
+prepfile("os.exit(true, true)")
+RUN('lua %s', prog)
+prepfile("os.exit(1, true)")
+NoRun("", "lua %s", prog)   -- no message
+prepfile("os.exit(false, true)")
+NoRun("", "lua %s", prog)   -- no message
+
+
+-- to-be-closed variables in main chunk
+prepfile[[
+  local x <close> = setmetatable({},
+        {__close = function (self, err)
+                     assert(err == nil)
+                     print("Ok")
+                   end})
+  local e1 <close> = setmetatable({}, {__close = function () print(120) end})
+  os.exit(true, true)
+]]
+RUN('lua %s > %s', prog, out)
+checkprogout("120\nOk\n")
+
+
+-- remove temporary files
+assert(os.remove(prog))
+assert(os.remove(otherprog))
+assert(not os.remove(out))
+
+-- invalid options
+NoRun("unrecognized option '-h'", "lua -h")
+NoRun("unrecognized option '---'", "lua ---")
+NoRun("unrecognized option '-Ex'", "lua -Ex")
+NoRun("unrecognized option '-vv'", "lua -vv")
+NoRun("unrecognized option '-iv'", "lua -iv")
+NoRun("'-e' needs argument", "lua -e")
+NoRun("syntax error", "lua -e a")
+NoRun("'-l' needs argument", "lua -l")
+
+
+if T then   -- test library?
+  print("testing 'not enough memory' to create a state")
+  NoRun("not enough memory", "env MEMLIMIT=100 lua")
+
+  -- testing 'warn'
+  warn("@store")
+  warn("@123", "456", "789")
+  assert(_WARN == "@123456789"); _WARN = false
+
+  warn("zip", "", " ", "zap")
+  assert(_WARN == "zip zap"); _WARN = false
+  warn("ZIP", "", " ", "ZAP")
+  assert(_WARN == "ZIP ZAP"); _WARN = false
+  warn("@normal")
+end
+
+do
+  -- 'warn' must get at least one argument
+  local st, msg = pcall(warn)
+  assert(string.find(msg, "string expected"))
+
+  -- 'warn' does not leave unfinished warning in case of errors
+  -- (message would appear in next warning)
+  st, msg = pcall(warn, "SHOULD NOT APPEAR", {})
+  assert(string.find(msg, "string expected"))
+end
+
+print('+')
+
+print('testing Ctrl C')
+do
+  -- interrupt a script
+  local function kill (pid)
+    return os.execute(string.format('kill -INT %s 2> /dev/null', pid))
+  end
+
+  -- function to run a script in background, returning its output file
+  -- descriptor and its pid
+  local function runback (luaprg)
+    -- shell script to run 'luaprg' in background and echo its pid
+    local shellprg = string.format('%s -e "%s" & echo $!', progname, luaprg)
+    local f = io.popen(shellprg, "r")   -- run shell script
+    local pid = f:read()   -- get pid for Lua script
+    print("(if test fails now, it may leave a Lua script running in \z
+            background, pid " .. pid .. ")")
+    return f, pid
+  end
+
+  -- Lua script that runs protected infinite loop and then prints '42'
+  local f, pid = runback[[
+    pcall(function () print(12); while true do end end); print(42)]]
+  -- wait until script is inside 'pcall'
+  assert(f:read() == "12")
+  kill(pid)  -- send INT signal to Lua script
+  -- check that 'pcall' captured the exception and script continued running
+  assert(f:read() == "42")  -- expected output
+  assert(f:close())
+  print("done")
+
+  -- Lua script in a long unbreakable search
+  local f, pid = runback[[
+    print(15); string.find(string.rep('a', 100000), '.*b')]]
+  -- wait (so script can reach the loop)
+  assert(f:read() == "15")
+  assert(os.execute("sleep 1"))
+  -- must send at least two INT signals to stop this Lua script
+  local n = 100
+  for i = 0, 100 do   -- keep sending signals
+    if not kill(pid) then   -- until it fails
+      n = i   -- number of non-failed kills
+      break
+    end
+  end
+  assert(f:close())
+  assert(n >= 2)
+  print(string.format("done (with %d kills)", n))
+
+end
+
+print("OK")

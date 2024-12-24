@@ -53,14 +53,14 @@ def fuzz_one(fuzz):
             # 增加崩溃计数
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            if fuzz.total_crash_count <= 100:
+            if fuzz.total_crash_count <= FuzzConstants.max_crash_seeds_saved:
                 save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             # 增加超时计数
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            if fuzz.total_timeout_count <= 100:
+            if fuzz.total_timeout_count <= FuzzConstants.max_timeout_seeds_saved:
                 save_timeout_seed(new_seed,fuzz)
 
         if not exec_result["new_coverage"]:
@@ -81,13 +81,13 @@ def fuzz_one(fuzz):
         if exec_result["crash"]:
             fuzz.last_fuzz_crash_count += 1
             fuzz.total_crash_count += 1
-            if fuzz.total_crash_count <= 100:
+            if fuzz.total_crash_count <= FuzzConstants.max_crash_seeds_saved:
                 save_crash_seed(new_seed,fuzz)
 
         if exec_result["timeout"]:
             fuzz.last_fuzz_timeout_count += 1
             fuzz.total_timeout_count += 1
-            if fuzz.total_timeout_count <= 100:
+            if fuzz.total_timeout_count <= FuzzConstants.max_timeout_seeds_saved:
                 save_timeout_seed(new_seed,fuzz)
 
     # print("变异结果：",found_new_seed)
@@ -167,14 +167,14 @@ def decide_mutation_count(score):
 
 
 # # 具体的变异方法（示例与之前类似）
-def bitflip_mutation(seed, L=8, S=8):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
+def bitflip_mutation(seed, L=1, S=1):  # L/S 变体包括1/1、2/1、4/1、8/8、16/8、32/8
     """位翻转变异"""
     if not seed:
         return seed
     seed = bytearray(seed)
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:
@@ -202,7 +202,7 @@ def arithmetic_mutation(seed, L=8):  # L可能为8 16 32
     step = L // 8
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:
@@ -241,7 +241,7 @@ def interest_mutation(seed, L=8):  # L可能为8 16 32
     step = L // 8
 
     length = len(seed)
-    skip_bytes = 24;
+    skip_bytes = 24
     if length <= 48:
         skip_bytes = 8
     if length <= 24:

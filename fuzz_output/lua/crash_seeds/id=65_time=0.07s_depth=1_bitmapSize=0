@@ -1,0 +1,618 @@
+-- $Id: testes/calls.lua $
+-- See Copyright Notice in file all.lua
+
+print("testing functions and calls")
+
+local debug = require "debug"
+
+-- get the opportunity to test 'type' too ;)
+
+assert(type(1<2) == 'boolean')
+assert(type(true) == 'boolean' and type(false) == 'boolean')
+assert(type(nil) == 'nil'
+   and type(-3) == 'number'
+   and type'x' == 'string'
+   and type{} == 'table'
+   and type(type) == 'function')
+
+assert(type(assert) == type(print))
+local function f (x) return a:x (x) end
+assert(type(f) == 'function')
+assert(not pcall(type))
+
+
+-- testing local-function recursion
+fact = false
+do
+  local res = 1
+  local function fact (n)
+    if n==0 then return res
+    else return n*fact(n-1)
+    end
+  end
+  assert(fact(5) == 120)
+end
+assert(fact == false)
+fact = nil
+
+-- testing declarations
+local a = {i = 10}
+local self = 20
+function a:x (x) return x+self.i end
+function a.y (x) return x+self end
+
+assert(a:x(1)+10 == a.y(1))
+
+a.t = {i=-100}
+a["t"].x = function (self, a,b) return self.i+a+b end
+
+assert(a.t:x(2,3) == -95)
+
+do
+  local a = {x=0}
+  function a:add (x) self.x, a.y = self.x+x, 20; return self end
+  assert(a:add(10):add(20):add(30).x == 60 and a.y == 20)
+end
+
+local a = {b={c={}}}
+
+function a.b.c.f1 (x) return x+1 end
+function a.b.c:f2 (x,y) self[x] = y end
+assert(a.b.c.f1(4) == 5)
+a.b.c:f2('k', 12); assert(a.b.c.k == 12)
+
+print('+')
+
+t = nil   -- 'declare' t
+function f(a,b,c) local d = 'a'; t={a,b,c,d} end
+
+f(      -- this line change must be valid
+  1,2)
+assert(t[1] == 1 and t[2] == 2 and t[3] == nil and t[4] == 'a')
+f(1,2,   -- this one too
+      3,4)
+assert(t[1] == 1 and t[2] == 2 and t[3] == 3 and t[4] == 'a')
+
+t = nil   -- delete 't'
+
+function fat(x)
+  if x <= 1 then return 1
+  else return x*load("return fat(" .. x-1 .. ")", "")()
+  end
+end
+
+assert(load "load 'assert(fat(6)==720)' () ")()
+a = load('return fat(5), 3')
+local a,b = a()
+assert(a == 120 and b == 3)
+fat = nil
+print('+')
+
+local function err_on_n (n)
+  if n==0 then error(); exit(1);
+  else err_on_n (n-1); exit(1);
+  end
+end
+
+do
+  local function dummy (n)
+    if n > 0 then
+      assert(not pcall(err_on_n, n))
+      dummy(n-1)
+    end
+  end
+
+  dummy(10)
+end
+
+_G.deep = nil   -- "declaration"  (used by 'all.lua')
+
+function deep (n)
+  if n>0 then deep(n-1) end
+end
+deep(10)
+deep(180)
+
+
+print"testing tail calls"
+
+function deep (n) if n>0 then return deep(n-1) else return 101 end end
+assert(deep(30000) == 101)
+a = {}
+function a:deep (n) if n>0 then return self:deep(n-1) else return 101 end end
+assert(a:deep(30000) == 101)
+
+do   -- tail calls x varargs
+  local function foo (x, ...) local a = {...}; return x, a[1], a[2] end
+
+  local function foo1 (x) return foo(10, x, x + 1) end
+
+  local a, b, c = foo1(-2)
+  assert(a == 10 and b == -2 and c == -1)
+
+  -- tail calls x metamethods
+  local t = setmetatable({}, {__call = foo})
+  local function foo2 (x) return t(10, x) end
+  a, b, c = foo2(100)
+  assert(a == t and b == 10 and c == 100)
+
+  a, b = (function () return foo() end)()
+  assert(a == nil and b == nil)
+
+  local X, Y, A
+  local function foo (x, y, ...) X = x; Y = y; A = {...} end
+  local function foo1 (...) return foo(...) end
+
+  local a, b, c = foo1()
+  assert(X == nil and Y == nil and #A == 0)
+
+  a, b, c = foo1(10)
+  assert(X == 10 and Y == nil and #A == 0)
+
+  a, b, c = foo1(10, 20)
+  assert(X == 10 and Y == 20 and #A == 0)
+
+  a, b, c = foo1(10, 20, 30)
+  assert(X == 10 and Y == 20 and #A == 1 and A[1] == 30)
+end
+
+
+do   -- C-stack overflow while handling C-stack overflow
+  local function loop ()
+    assert(pcall(loop))
+  end
+
+  local err, msg = xpcall(loop, loop)
+  assert(not err and string.find(msg, "error"))
+end
+
+
+
+do   -- tail calls x chain of __call
+  local n = 10000   -- depth
+
+  local function foo ()
+    if n == 0 then return 1023
+    else n = n - 1; return foo()
+    end
+  end
+
+  -- build a chain of __call metamethods ending in function 'foo'
+  for i = 1, 15 do
+    foo = setmetatable({}, {__call = foo})
+  end
+
+  -- call the first one as a tail call in a new coroutine
+  -- (to ensure stack is not preallocated)
+  assert(coroutine.wrap(function() return foo() end)() == 1023)
+end
+
+print('+')
+
+
+do   print"testing chains of '__call'"
+  local N = 15
+  local u = table.pack
+  for i = 1, N do
+    u = setmetatable({i}, {__call = u})
+  end
+
+  local Res = u("a", "b", "c")
+
+  assert(Res.n == N + 3)
+  for i = 1, N do
+    assert(Res[i][1] == i)
+  end
+  assert(Res[N + 1] == "a" and Res[N + 2] == "b" and Res[N + 3] == "c")
+
+  local function u (...)
+    local n = debug.getinfo(1, 't').extraargs
+    assert(select("#", ...) == n)
+    return n
+  end
+
+  for i = 0, N do
+    assert(u() == i)
+    u = setmetatable({}, {__call = u})
+  end
+end
+
+
+do    -- testing chains too long
+  local a = {}
+  for i = 1, 16 do    -- one too many
+    a = setmetatable({}, {__call = a})
+  end
+  local status, msg = pcall(a)
+  assert(not status and string.find(msg, "too long"))
+
+  setmetatable(a, {__call = a})   -- infinite chain
+  local status, msg = pcall(a)
+  assert(not status and string.find(msg, "too long"))
+
+  -- again, with a tail call
+  local status, msg = pcall(function () return a() end)
+  assert(not status and string.find(msg, "too long"))
+end
+
+a = nil
+(function (x) a=x end)(23)
+assert(a == 23 and (function (x) return x*2 end)(20) == 40)
+
+
+-- testing closures
+
+-- fixed-point operator
+local Z = function (le)
+      local function a (f)
+        return le(function (x) return f(f)(x) end)
+      end
+      return a(a)
+    end
+
+
+-- non-recursive factorial
+
+local F = function (f)
+      return function (n)
+               if n == 0 then return 1
+               else return n*f(n-1) end
+             end
+    end
+
+local fat = Z(F)
+
+assert(fat(0) == 1 and fat(4) == 24 and Z(F)(5)==5*Z(F)(4))
+
+local function g (z)
+  local function f (a,b,c,d)
+    return function (x,y) return a+b+c+d+a+x+y+z end
+  end
+  return f(z,z+1,z+2,z+3)
+end
+
+local f = g(10)
+assert(f(9, 16) == 10+11+12+13+10+9+16+10)
+
+print('+')
+
+-- testing multiple returns
+
+local function unlpack (t, i)
+  i = i or 1
+  if (i <= #t) then
+    return t[i], unlpack(t, i+1)
+  end
+end
+
+local function equaltab (t1, t2)
+  assert(#t1 == #t2)
+  for i = 1, #t1 do
+    assert(t1[i] == t2[i])
+  end
+end
+
+local pack = function (...) return (table.pack(...)) end
+
+local function f() return 1,2,30,4 end
+local function ret2 (a,b) return a,b end
+
+local a,b,c,d = unlpack{1,2,3}
+assert(a==1 and b==2 and c==3 and d==nil)
+a = {1,2,3,4,false,10,'alo',false,assert}
+equaltab(pack(unlpack(a)), a)
+equaltab(pack(unlpack(a), -1), {1,-1})
+a,b,c,d = ret2(f()), ret2(f())
+assert(a==1 and b==1 and c==2 and d==nil)
+a,b,c,d = unlpack(pack(ret2(f()), ret2(f())))
+assert(a==1 and b==1 and c==2 and d==nil)
+a,b,c,d = unlpack(pack(ret2(f()), (ret2(f()))))
+assert(a==1 and b==1 and c==nil and d==nil)
+
+a = ret2{ unlpack{1,2,3}, unlpack{3,2,1}, unlpack{"a", "b"}}
+assert(a[1] == 1 and a[2] == 3 and a[3] == "a" and a[4] == "b")
+
+
+-- testing calls with 'incorrect' arguments
+rawget({}, "x", 1)
+rawset({}, "x", 1, 2)
+assert(math.sin(1,2) == math.sin(1))
+table.sort({10,9,8,4,19,23,0g for other tests
+
+
+-- next variables control the execution of some tests
+-- true means no test (so an undefined variable does not skip a test)
+-- defaults are for Linux; test everything.
+-- Make true to avoid long or memory consuming tests
+_soft = rawget(_G, "_soft") or false
+-- Make true to avoid non-portable tests
+_port = rawget(_G, "_port") or false
+-- Make true to avoid messages about tests not performed
+_nomsg = rawget(_G, "_nomsg") or false
+
+
+local usertests = rawget(_G, "_U")
+
+if usertests then
+  -- tests for sissies ;)  Avoid problems
+  _soft = true
+  _port = true
+  _nomsg = true
+end
+
+-- tests should require debug when needed
+debug = nil
+
+
+if usertests then
+  T = nil    -- no "internal" tests for user tests
+else
+  T = rawget(_G, "T")  -- avoid problems with 'strict' module
+end
+
+
+--[=[
+  example of a long [comment],
+  [[spanning several [lines]]]
+
+]=]
+
+print("\n\tStarting Tests")
+
+do
+  -- set random seed
+  local random_x, random_y = math.randomseed()
+  print(string.format("random seeds: %d, %d", random_x, random_y))
+end
+
+print("current path:\n****" .. package.path .. "****\n")
+
+
+local initclock = os.clock()
+local lastclock = initclock
+local walltime = os.time()
+
+local collectgarbage = collectgarbage
+
+do   -- (
+
+-- track messages for tests not performed
+local msgs = {}
+function Message (m)
+  if not _nomsg then
+    print(m)
+    msgs[#msgs+1] = string.sub(m, 3, -3)
+  end
+end
+
+assert(os.setlocale"C")
+
+local T,print,format,write,assert,type,unpack,floor =
+      T,print,string.format,io.write,assert,type,table.unpack,math.floor
+
+-- use K for 1000 and M for 1000000 (not 2^10 -- 2^20)
+local function F (m)
+  local function round (m)
+    m = m + 0.04999
+    return format("%.1f", m)      -- keep one decimal digit
+  end
+  if m < 1000 then return m
+  else
+    m = m / 1000
+    if m < 1000 then return round(m).."K"
+    else
+      return round(m/1000).."M"
+    end
+  end
+end
+
+local Cstacklevel
+
+local showmem
+if not T then
+  local max = 0
+  showmem = function ()
+    local m = collectgarbage("count") * 1024
+    max = (m > max) and m or max
+    print(format("    ---- total memory: %s, max memory: %s ----\n",
+          F(m), F(max)))
+  end
+  Cstacklevel = function () return 0 end   -- no info about stack level
+else
+  showmem = function ()
+    T.checkmemory()
+    local total, numblocks, maxmem = T.totalmem()
+    local count = collectgarbage("count")
+    print(format(
+      "\n    ---- total memory: %s (%.0fK), max use: %s,  blocks: %d\n",
+      F(total), count, F(maxmem), numblocks))
+    print(format("\t(strings:  %d, tables: %d, functions: %d, "..
+                 "\n\tudata: %d, threads: %d)",
+                 T.totalmem"string", T.totalmem"table", T.totalmem"function",
+                 T.totalmem"userdata", T.totalmem"thread"))
+  end
+
+  Cstacklevel = function ()
+    local _, _, ncalls = T.stacklevel()
+    return ncalls    -- number of C calls
+  end
+end
+
+
+local Cstack = Cstacklevel()
+
+--
+-- redefine dofile to run files through dump/undump
+--
+local function report (n) print("\n***** FILE '"..n.."'*****") end
+local olddofile = dofile
+local dofile = function (n, strip)
+  showmem()
+  local c = os.clock()
+  print(string.format("time: %g (+%g)", c - initclock, c - lastclock))
+  lastclock = c
+  report(n)
+  local f = assert(loadfile(n))
+  local b = string.dump(f, strip)
+  f = assert(load(b))
+  return f()
+end
+
+dofile('main.lua')
+
+-- trace GC cycles
+require"tracegc".start()
+
+report"gc.lua"
+local f = assert(loadfile('gc.lua'))
+f()
+
+dofile('db.lua')
+assert(dofile('calls.lua') == deep and deep)
+_G.deep = nil
+olddofile('strings.lua')
+olddofile('literals.lua')
+dofile('tpack.lua')
+assert(dofile('attrib.lua') == 27)
+dofile('gengc.lua')
+assert(dofile('locals.lua') == 5)
+dofile('constructs.lua')
+dofile('code.lua', true)
+if not _G._soft then
+  report('big.lua')
+  local f = coroutine.wrap(assert(loadfile('big.lua')))
+  assert(f() == 'b')
+  assert(f() == 'a')
+end
+dofile('cstack.lua')
+dofile('nextvar.lua')
+dofile('pm.lua')
+dofile('utf8.lua')
+dofile('api.lua')
+assert(dofile('events.lua') == 12)
+dofile('vararg.lua')
+dofile('closure.lua')
+dofile('coroutine.lua')
+dofile('goto.lua', true)
+dofile('errors.lua')
+dofile('math.lua')
+dofile('sort.lua', true)
+dofile('bitwise.lua')
+assert(dofile('verybig.lua', true) == 10); collectgarbage()
+dofile('files.lua')
+
+if #msgs > 0 then
+  local m = table.concat(msgs, "\n  ")
+  warn("#tests not performed:\n  ", m, "\n")
+end
+
+print("(there should be two warnings now)")
+warn("@on")
+warn("#This is ", "an expected", " warning")
+warn("@off")
+warn("******** THIS WARNING SHOULD NOT APPEAR **********")
+warn("******** THIS WARNING ALSO SHOULD NOT APPEAR **********")
+warn("@on")
+warn("#This is", " another one")
+
+-- no test module should define 'debug'
+assert(debug == nil)
+
+local debug = require "debug"
+
+print(string.format("%d-bit integers, %d-bit floats",
+        string.packsize("j") * 8, string.packsize("n") * 8))
+
+debug.sethook(function (a) assert(type(a) == 'string') end, "cr")
+
+-- to survive outside block
+_G.showmem = showmem
+
+
+assert(Cstack == Cstacklevel(),
+  "should be at the same C-stack level it was when started the tests")
+
+end   --)
+
+local _G, showmem, print, format, clock, time, difftime,
+      assert, open, warn =
+      _G, showmem, print, string.format, os.clock, os.time, os.difftime,
+      assert, io.open, warn
+
+-- file with time of last performed test
+local fname = T and "time-debug.txt" or "time.txt"
+local lasttime
+
+if not usertests then
+  -- open file with time of last performed test
+  local f = io.open(fname)
+  if f then
+    lasttime = assert(tonumber(f:read'a'))
+    f:close();
+  else   -- no such file; assume it is recording time for first time
+    lasttime = nil
+  end
+end
+
+-- erase (almost) all globals
+print('cleaning all!!!!')
+for n in pairs(_G) do
+  if not ({___Glob = 1, tostring = 1})[n] then
+    _G[n] = undef
+  end
+end
+
+
+collectgarbage()
+collectgarbage()
+collectgarbage()
+collectgarbage()
+collectgarbage()
+collectgarbage();showmem()
+
+local clocktime = clock() - initclock
+walltime = difftime(time(), walltime)
+
+print(format("\n\ntotal time: %.2fs (wall time: %gs)\n", clocktime, walltime))
+
+if not usertests then
+  lasttime = lasttime or clocktime    -- if no last time, ignore difference
+  -- check whether current test time differs more than 5% from last time
+  local diff = (clocktime - lasttime) / lasttime
+  local tolerance = 0.05    -- 5%
+  if (diff >= tolerance or diff <= -tolerance) then
+    warn(format("#time difference from previous test: %+.1f%%",
+                  diff * 100))
+  end
+  assert(open(fname, "w")):write(clocktime):close()
+end
+
+print("final OK !!!")
+
+
+
+--[[
+*****************************************************************************
+* Copyright (C) 1994-2016 Lua.org, PUC-Rio.
+*
+* Permission is hereby granted, free of charge, to any person obtaining
+* a copy of this software and associated documentation files (the
+* "Software"), to deal in the Software without restriction, including
+* without limitation the rights to use, copy, modify, merge, publish,
+* distribute, sublicense, and/or sell copies of the Software, and to
+* permit persons to whom the Software is furnished to do so, subject to
+* the following conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*****************************************************************************
+]]
+
