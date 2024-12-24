@@ -55,7 +55,7 @@ docker build -t simplefuzzer:latest .
 ```
 打包完成后，可以启动这个镜像。如果想要将待测程序放入镜像，只需要添加-v参数
 ```
-docker run -it -v <your_program_path>:/src --name simplefuzzer simplefuzzer:latest
+docker run -it -v “<your_program_path>:/src” --name simplefuzzer simplefuzzer:latest
 ```
 如果不想使用Docker，也可以在Linux环境中直接使用，需要确保拥有可执行python环境，且完整安装requirements.txt中的依赖项。可以使用如下命令安装
 ```
