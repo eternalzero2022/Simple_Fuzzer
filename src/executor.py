@@ -132,6 +132,7 @@ def execute_seed(seed, fuzz):
     :param fuzz: Fuzz实例
     :return: 一个dictionary，包含new_coverage, crash和timeout三个键，如果种子具备对应特性就将其设为true，否则为false
     """
+
     if not isinstance(fuzz, Fuzz):
         raise TypeError('fuzz必须是Fuzz类型')
     

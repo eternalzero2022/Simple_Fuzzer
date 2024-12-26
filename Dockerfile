@@ -5,7 +5,11 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装 make 和 build-essential
-RUN apt-get update && apt-get install -y python3 python3-pip cmake libtool make build-essential llvm clang file binutils && apt-get clean
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|http://mirrors.ustc.edu.cn/ubuntu|g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y python3 python3-pip cmake libtool make build-essential llvm clang file binutils \
+    && apt-get clean
+
 
 RUN mkdir /SimpleFuzzer
 
