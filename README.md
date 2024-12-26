@@ -1,5 +1,9 @@
 # Simple_Fuzzer
 
+一个基于AFL++的简化版模糊测试程序，对AFL++插桩过的程序执行模糊测试。
+
+项目简要使用方法可以观看视频：[项目展示_Bilibili](https://www.bilibili.com/video/BV1vqkoYAEwx/?vd_source=864244b918d2e3020e1e7dc5c43b1c22)
+
 ## 项目设计方案
 ### 项目架构
 总体结构如下：
@@ -23,7 +27,7 @@
 ### 环境构建
 环境构建前，需要先确保已经拥有了经过afl插桩编译过的程序。如果程序还没有经过afl插桩编译，需要**先将项目目录下的Dockerfile修改为如下内容**。如果已经拥有afl插桩编译过的程序则**可跳过**修改Dockerfile。
 ```
-# 使用 Python 3.10.12 作为基础镜像
+# 使用 aflplusplus 作为基础镜像
 FROM aflplusplus/aflplusplus
 
 # 安装 make 和 build-essential
@@ -88,7 +92,7 @@ python3 fuzz.py -i ./seeds_example  --cmd="./program/calculator"
 
 用户如果想要修改执行结果保存路径，可以使用-o参数修改执行结果保存主目录，并使用-n参数指定任务名称，即修改主保存目录下的子目录。例如使用如下命令：
 ```
-python3 fuzz.py -o ./my_output_dic -n calculator [...]
+python3 fuzz.py -o ./my_output_dir -n calculator [...]
 ```
 则输出目录被指定为./my_output_dic/calculator。
 
@@ -123,7 +127,9 @@ python3 fuzz.py -i program_examples/compiled/src/mjs-2.20.0/tests -o my_outputs 
 |same_score|是否为每个种子分配相同变异机会|False|
 
 ### 更多示例程序
-除了项目目录下`program`下的简单程序`calculator`和初始种子目录`seeds_example`外，项目还额外提供了十个真实世界中的程序，供程序进行模糊测试使用。
+除了项目目录下`program`下的简单程序`calculator`和初始种子目录`seeds_example`外，项目还额外提供了十个真实世界中的程序，供程序进行模糊测试使用。这些程序的运行方法在`program_examples/运行方法.md`中说明。
+
+每一个项目的24小时的执行结果，均存储在`fuzz_output`的每一个对应程序目录下。
 
 ### 项目类层次设计
 整体来看，fuzz.py和main.py位于类层次的上层，统筹整个模糊程序的启动和循环流转；mutator.py位于类层次的中层，负责处理模糊测试中单个种子的多个业务；seed_scheduler.py、power_scheduler.py、executor.py、result_monitor.py、evaluator.py位于类层次的较低层，负责处理模糊测试中的某个具体业务，而fuzzconstants.py、model.py位于类层次的最底层，是对数据类型的定义和常量的定义，被其它组件所依赖。
