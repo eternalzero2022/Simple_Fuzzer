@@ -174,8 +174,8 @@ def execute_seed(seed, fuzz):
 
         start_time = time.time()
 
-        shm_id = fuzz.shm.id
-        os.environ[FuzzConstants.shm_env_var] = str(shm_id)
+        # shm_id = fuzz.shm.id
+        # os.environ[FuzzConstants.shm_env_var] = str(shm_id)
 
         # 执行目标程序，捕获输出和错误
         process = subprocess.run(cmd, shell=True, input=seed.seed, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

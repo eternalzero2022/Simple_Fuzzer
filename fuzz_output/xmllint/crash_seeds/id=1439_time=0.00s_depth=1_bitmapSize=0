@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<D:href xmlns:D="http://www.ietf.org/standards/dav/">http://www.Y utf16l SYSTEM "dtds/utf16l.ent">
+]>
+
+<foo> &utf16b; &utf16l; </foo>

@@ -1,0 +1,4 @@
+<!DOCTYPE doc [
+<!ELEMENT doc (a , b)*>
+<!ELEMENT a (# </xsd:element>
+</xsd:schema>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<dia:diagram xmlns:dia="http://www.lysator.liu.se/~alla/dia/">
+  <dia:diagramdata>
+    <dia:attribute name="background">
+      <dia:color val="#ffffff"/>
+    </dia:attribute>
+  </dia:diagramdata>
+  <dia:layer name="Background" visible="true">
+    <dia:object type="Standard - Line" version="0" id="O0">
+      <dia:attribute name="obj_pos">
+        <dia:point val="1.95,6.85"/>
+      </dia:attribute>
+      <dia:attribute name="obj_bb">
+        <dia:rectangle val="1.9,6.8;11,8.55"/>
+      </dia:attribute>
+      <dia:attribute name="conn_endpoints">
+        <dia:point val="1.95,6.85"/>
+        <dia:point val="10.95,8.5"/>
+      </dia:attribute>
+      <dia:attribute name="line_color">
+        <dia:color val="#000000"/>
+      </dia:attribute>
+      <dia:attribute name="line_width">
+        <dia:real val="0.1"/>
+     ="http://www.ietf.org/standards/dav/">
+  <D:response>
+    <D:href>
+	   http://webdav.sb.aol.com/workspace/webdav/proposal.doc
+      </D:href>
+    <D:href>
+	   http://webdav.sb.aol.com/workspace/webdav/
+      </D:href>
+    <D:status>HTTP/1.1 202 Accepted</D:status>
+  </D:response>
+  <D:response>
+    <D:href>http://foo.bar/blah</D:href>
+    <D:status>HTTP/1.1 403 Forbidden</D:status>
+  </D:response>
+</D:multistatus>

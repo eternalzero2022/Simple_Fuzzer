@@ -1,0 +1,216 @@
+-- $Id: testes/gengc.lua $
+-- See Copyright Notice in file all.lua
+
+print('testing generational garbage collection')
+
+local debug = require"debug"
+
+assert(collectgarbage("isrunning"))
+
+collectgarbage()
+
+local oldmode = collectgarbage("generational")
+
+
+-- ensure that table barrier evolves correctly
+do
+  local U = {}
+  -- full collection makes 'U' old
+  collectgarbage()
+  assert(not T or T.gcage(U) == "old")
+
+  -- U refers to a new table, so it becomes 'touched1'
+  U[1] = {x = {234}}
+  assert(not T or (T.gcage(U) == "touched1" and T.gcage(U[1]) == "new"))
+
+  -- both U and the table survive one moep('a', 10000) .. string.rep('b', 10000)
+  assert(not pcall(string.gsub, a, 'b'))
+end
+
+-- recursive nest of gsubs
+local function rev (s)
+  return string.gsub(s, "(.)(.+)", function (c,s1) return rev(s1)..c end)
+end
+
+local x = "abcdef"
+assert(rev(rev(x)) == x)
+
+
+-- gsub with tables
+assert(string.gsub("alo alo", ".", {}) == "alo alo")
+assert(string.gsub("alo alo", "(.)", {a="AA", l=""}) == "AAo AAo")
+assert(string.gsub("alo alo", "(.).", {a="AA", l="K"}) == "AAo AAo")
+assert(string.gsub("alo alo", "((.)(.?))", {al="AA", o=false}) == "AAo AAo")
+
+assert(string.gsub("alo alo", "().", {'x','yy','zzz'}) == "xyyzzz alo")
+
+t = {}; setmetatable(t, {__index = function (t,s) return string.upper(s) end})
+assert(string.gsub("a alo b hi", "%w%w+", t) == "a ALO b HI")
+
+
+-- tests for gmatch
+local a = 0
+for i in string.gmatch('abcde', '()') do assert(i == a+1); a=i end
+assert(a==6)
+
+t = {n=0}
+for w in string.gmatch("first second word", "%w+") do
+      t.n=t.n+1; t[t.n] = w
+end
+assert(t[1] == "first" and t[2] == "second" and t[3] == "word")
+
+t = {3, 6, 9}
+for i in string.gmatch ("xuxx uu ppar r", "()(.)%2") do
+  assert(i == table.remove(t, 1))
+end
+assert(#t == 0)
+
+t = {}
+for i,j in string.gmatch("13 14 10 = 11, 15= 16, 22=23", "(%d+)%s*=%s*(%d+)") do
+  t[tonumber(i)] = tonumber(j)
+end
+a = 0
+for k,v in pairs(t) do assert(k+1 == v+0); a=a+1 end
+assert(a == 3)
+
+
+do   -- init parameter in gmatch
+  local s = 0
+  for k in string.gmatch("10 20 30", "%d+", 3) do
+    s = s + tonumber(k)
+  end
+  assert(s == 50)
+
+  s = 0
+  for k in string.gmatch("11 21 31", "%d+", -4) do
+    s = s + tonumber(k)
+  end
+  assert(s == 32)
+
+  -- there is an empty string at the end of the subject
+  s = 0
+  for k in string.gmatch("11 21 31", "%w*", 9) do
+    s = s + 1
+  end
+  assert(s == 1)
+
+  -- there are no empty strings after the end of the subject
+  s = 0
+  for k in string.gmatch("11 21 31", "%w*", 10) do
+    s = s + 1
+  end
+  assert(s == 0)
+end
+
+
+-- tests for `%f' (`fronti
+-- to repeat a label in a different fu 2<1 or (2>1 and 'a'); assert(x=='a')
+
+
+do
+  local a; if nil then a=1; else a=2; end;    -- this nil comes as PUSHNIL 2
+  assert(a==2)
+end
+
+local function F (a)
+  assert(debug.getinfo(1, "n").name == 'F')
+  return a,2,3
+end
+
+a,b = F(1)~=nil; assert(a == true and b == nil);
+a,b = F(nil)==nil; assert(a == true and b == nil)
+
+----------------------------------------------------------------
+------------------------------------------------------------------
+
+-- sometimes will be 0, sometimes will not...
+_ENV.GLOB1 = math.random(0, 1)
+
+-- basic expressions with their respective values
+local basiccases = {
+  {"nil", nil},
+  {"false", false},
+  {"true", true},
+  {"10", 10},
+  {"(0==_ENV.GLOB1)", 0 == _ENV.GLOB1},
+}
+
+local prog
+
+if _ENV.GLOB1 == 0 then
+  basiccases[2][1] = "F"   -- constant false
+
+  prog = [[
+    local F <const> = false
+    if %s then IX = true end
+    return %s
+]]
+else
+  basiccases[4][1] = "k10"   -- constant 10
+
+  prog = [[
+    local k10 <const> = 10
+    if %s then IX = true end
+    return %s
+  ]]
+end
+
+print('testing short-circuit optimizations (' .. _ENV.GLOB1 .. ')')
+
+
+-- operators with their respective values
+local binops <const> = {
+  {" and ", function (a,b) if not a then return a else return b end end},
+  {" or ", function (a,b) if a then return a else return b end end},
+}
+
+local cases <const> = {}
+
+-- creates all combinations of '(cases[i] op cases[n-i])' plus
+-- 'not(cases[i] op cases[n-i])' (syntax + value)
+local function createcases (n)
+  local res = {}
+  for i = 1, n - 1 do
+    for _, v1 in ipairs(cases[i]) do
+      for _, v2 in ipairs(cases[n - i]) do
+        for _, op in ipairs(binops) do
+            local t = {
+              "(" .. v1[1] .. op[1] .. v2[1] .. ")",
+              op[2](v1[2], v2[2])
+            }
+            res[#res + 1] = t
+            res[#res + 1] = {"not" .. t[1], not t[2]}
+        end
+      end
+    end
+  end
+  return res
+end
+
+-- do not do too many combinations for soft tests
+local level = _soft and 3 or 4
+
+cases[1] = basiccases
+for i = 2, level do cases[i] = createcases(i) end
+print("+")
+
+local i = 0
+for n = 1, level do
+  for _, v in pairs(cases[n]) do
+    local s = v[1]
+    local p = load(string.format(prog, s, s), "")
+    IX = false
+    assert(p() == v[2] and IX == not not v[2])
+    i = i + 1
+    if i % 60000 == 0 then print('+') end
+  end
+end
+IX = nil
+_G.GLOB1 = nil
+------------------------------------------------------------------
+
+-- testing some syntax errors (chosen through 'gcov')
+checkload("for x do", "expected")
+checkload("x:call", "expected")
+
+print'OK'

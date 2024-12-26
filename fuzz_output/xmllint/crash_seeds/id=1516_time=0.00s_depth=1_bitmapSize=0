@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<rec>
+<eg><![CDATA[<!ENTITY % pub    OrMore>
+    <element name="card">
+      <attribute name="name"/>
+      <attribute name="email"/>
+    </element>
+  </zeroOrMore>
+</element>

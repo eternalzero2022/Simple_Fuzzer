@@ -1,0 +1,91 @@
+-- track collections
+
+local M = {}
+
+-- import list
+local setmetatable, stderr, collectgarbage =
+         setmetatable, io.stderr, collectgarbage
+
+_ENV = nil
+
+local active = false
+
+
+-- each time a table is collected, remark it for finalization on next
+-- cycle
+local mt = {}
+function mt.__gc (o)
+  stderr:write'.'    -- mark progress
+  if active then
+    setmetatable(o, mt)   -- remark object for finalization
+  end
+end
+
+
+function M.start ()
+  if not active then
+    active = true
+    setmetatable({}, mt)    -- create initial object
+  end
+end
+
+
+function M.stop ()
+  if active then
+   ebug.upvalueid(a[j], 4))
+      == (i == j))
+  end
+end
+
+--------------------------------------------------------------------------------
+-- testing if x goto optimizations
+
+local function testG (a)
+  if a == 1 then
+    goto l1
+    error("should never be here!")
+  elseif a == 2 then goto l2
+  elseif a == 3 then goto l3
+  elseif a == 4 then
+    goto l1  -- go to inside the block
+    error("should never be here!")
+    ::l1:: a = a + 1   -- must go to 'if' end
+  else
+    goto l4
+    ::l4a:: a = a * 2; goto l4b
+    error("should never be here!")
+    ::l4:: goto l4a
+    error("should never be here!")
+    ::l4b::
+  end
+  do return a end
+  ::l2:: do return "2" end
+  ::l3:: do return "3" end
+  ::l1:: return "1"
+end
+
+assert(testG(1) == "1")
+assert(testG(2) == "2")
+assert(testG(3) == "3")
+assert(testG(4) == 5)
+assert(testG(5) == 10)
+
+do
+  -- if x back goto out of scope of upvalue
+  local X
+  goto L1
+
+  ::L2:: goto L3
+
+  ::L1:: do
+    local a <close> = setmetatable({}, {__close = function () X = true end})
+    assert(X == nil)
+    if a then goto L2 end   -- jumping back out of scope of 'a'
+  end
+
+  ::L3:: assert(X == true)   -- checks that 'a' was correctly closed
+end
+--------------------------------------------------------------------------------
+
+
+print'OK'

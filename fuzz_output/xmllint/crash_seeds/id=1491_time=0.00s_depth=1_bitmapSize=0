@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<D:owner xmlns:D="http://www.ietf.org/standards/dav/">
+  <D:href>http://wr" type="xsd:string" />
+         <xsd:element name="comment" type="xsd:string"  minOccurs="0"/>
+      </xsd:choice>
+   </xsd:complexType>
+</xsd:schema> 
+

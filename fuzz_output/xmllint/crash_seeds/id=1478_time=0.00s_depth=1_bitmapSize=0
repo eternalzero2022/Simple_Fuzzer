@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="EUC-JP"?>
+<foo>
+Text with EUC-JP chars at position 214 (0xd6)
+___
+_____________ % deftest '&#60;!ELEMENT test (#PCDATA) >' >
+<!ENTITY % defmiddle '&#60;!ELEMENT middle (test) >' >
+<!ENTITY % defroot '&#60;!ELEMENT root (middle) >' >
+%defroot;%defmiddle;%deftest;
+]>
+<root><middle><test>sample</test></middle></root>

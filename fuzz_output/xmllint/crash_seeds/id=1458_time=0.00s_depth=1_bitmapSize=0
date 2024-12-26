@@ -1,0 +1,9 @@
+<root>
+  <foo xmlns="http://abc" />
+  <   <name path="@*[not(name()='id')]"/> is forbidden in element
+                    <name/>
+               </report>
+          </rule>
+     </pattern>
+</schema>
+

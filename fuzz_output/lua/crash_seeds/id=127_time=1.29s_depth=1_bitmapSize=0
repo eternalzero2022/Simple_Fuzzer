@@ -1,0 +1,135 @@
+-- $Id: testes/vararg.lua $
+-- See Copyright Notice in file all.lua
+
+print('testing vararg')
+
+local function f (a, ...)
+  local x = {n = select('#', ...), ...}
+  for i = 1, x.n do assert(a[i] == x[i]) end
+  return x.n
+end
+
+local function c12 (...)
+  assert(arg == _G.arg)    -- no local 'arg'
+  local x = {...}; x.n = #x
+  local res = (x.n==2 and x[1] == 1 and x[2] == 2)
+  if res then res = 55 end
+  return res, 2
+end
+
+local function vararg (...) return {n = select('#', ...), ...} end
+
+local call = function (f, args) return f(table.unpack(args, 1, args.n)) end
+
+assert(f() == 0)
+assert(f({1,2,3}, 1, 2, 3) == 3)
+assert(f({"alo", nil, 45, f, nil}, "alo", nil, 45, f, nil) == 5)
+
+assert(vararg().n == 0)
+assert(vararg(nil, nil).n == 2)
+
+assert(c12(1,2)==55)
+local a,b = assert(call(c12, {1,2}))
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=2})
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=1})
+assert(not a)
+assert(c12(1,2,3) == false)
+local a = vararg(call(next, {_G,nil;n=2}))
+local b,c = next(_G)
+assert(a[1] == b and a[2] == c and a.n == 2)
+a = vararg(call(call, {c12, {1,2}}))
+assert(a.n == 2 and a[1] == 55 and a[2] == 2)
+a = call(print, {'+'})
+assert(a == nil)
+
+local t = {1, 10}
+function t:f (...) local arg = {...}; return self[...]+#arg end
+assert(t:f(1,4) == 3 and t:f(2) == 11)
+print('+')
+
+local lim = 20
+local i, a = 1, {}
+while i <= lim do a[i] = i+0.3; i=i+1 end
+
+function f(a, b, c, d, ...)
+  local more = {...}
+  assert(a == 1.3 and more[1] == 5.3 and
+         more[lim-4] == lim+0.3 and not more[lim-3])
+end
+
+local function g (a,b,c)
+  assert(a == 1= a[2] and a[2] == a[3] and a[3] == 34)
+
+
+-- testing yields with continuations
+
+local y
+
+co = coroutine.wrap(function (...) return
+       T.testC([[ # initial function
+          yieldk 1 2
+          cannot be here!
+       ]],
+       [[  # 1st continuation
+         yieldk 0 3 
+         cannot be here!
+       ]],
+       [[  # 2nd continuation
+         yieldk 0 4 
+         cannot be here!
+       ]],
+       [[  # 3th continuation
+          pushvalue 6   # function which is last arg. to 'testC' here
+          pushnum 10; pushnum 20;
+          pcall 2 0 0   # call should throw an error and return to next line
+          pop 1		# remove error message
+          pushvalue 6
+          getglobal status; getglobal ctx
+          pcallk 2 2 5  # call should throw an error and jump to continuation
+          cannot be here!
+       ]],
+       [[  # 4th (and last) continuation
+         return *
+       ]],
+       -- function called by 3th continuation
+       function (a,b) x=a; y=b; error("errmsg") end,
+       ...
+)
+end)
+
+local a = {co(3,4,6)}
+assert(a[1] == 6 and a[2] == undef)
+a = {co()}; assert(a[1] == undef and _G.status == "YIELD" and _G.ctx == 2)
+a = {co()}; assert(a[1] == undef and _G.status == "YIELD" and _G.ctx == 3)
+a = {co(7,8)};
+-- original arguments
+assert(type(a[1]) == 'string' and type(a[2]) == 'string' and
+     type(a[3]) == 'string' and type(a[4]) == 'string' and
+     type(a[5]) == 'string' and type(a[6]) == 'function')
+-- arguments left from fist resume
+assert(a[7] == 3 and a[8] == 4)
+-- arguments to last resume
+assert(a[9] == 7 and a[10] == 8)
+-- error message and nothing more
+assert(a[11]:find("errmsg") and #a == 11)
+-- check arguments to pcallk
+assert(x == "YIELD" and y == 4)
+
+assert(not pcall(co))   -- coroutine should be dead
+
+_G.ctx = nil
+_G.status = nil
+
+
+-- bug in nCcalls
+local co = coroutine.wrap(function ()
+  local a = {pcall(pcall,pcall,pcall,pcall,pcall,pcall,pcall,error,"hi")}
+  return pcall(assert, table.unpack(a))
+end)
+
+local a = {co()}
+assert(a[10] == "hi")
+
+print'OK'

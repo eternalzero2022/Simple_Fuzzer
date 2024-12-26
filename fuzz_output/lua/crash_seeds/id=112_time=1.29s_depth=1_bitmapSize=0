@@ -1,0 +1,270 @@
+#!../lua
+-- $Id: testes/all.lua $
+-- See Copyright Notice at the end of this file
+
+
+local version = "Lua 5.5"
+if _VERSION ~= version then
+  io.stderr:write("This test suite is for ", version,
+                  ", not for ", _VERSION, "\nExiting tests")
+  return
+end
+
+
+_G.ARG = arg   -- save arg for other tests
+
+
+-- next variables control the execution of some tests
+-- true means no test (so an undefined variable does not skip a test)
+-- defaults are for Linux; test everything.
+-- Make true to avoid long or memory consuming tests
+_soft = rawget(_G, "_soft") or false
+-- Make true to avoid non-portable tests
+_port = rawget(_G, "_port") or false
+-- Make true to avoid messages about tests not performed
+_nomsg = rawget(_G, "_nomsg") or false
+
+
+local usertests = rawget(_G, "_U")
+
+if usertests then
+  -- tests for sissies ;)  Avoid problems
+  _soft = true
+  _port = true
+  _nomsg = true
+end
+
+-- tests should require debug when needed
+debug = nil
+
+
+if usertests then
+  T = nil    -- no "internal" tests for user tests
+else
+  T = rawget(_G, "T")  -- avoid problems with 'strict' module
+end
+
+
+--[=[
+  example of a long [comment],
+  [[spanning several [lines]]]
+
+]=]
+
+print("\n\tStarting Tests")
+
+do
+  -- set random seed
+  local random_x, random_y = math.randomseed()
+  print(string.format("random seeds: %d, %d", random_x, random_y))
+end
+
+print("current path:\n****" .. package.path .. "****\n")
+
+
+local initclock = os.clock()
+local lastclock = initclock
+local walltime = os.time()
+
+local collectgarbage = collectgarbage
+
+do   -- (
+
+-- track messages for tests not performed
+local msgs = {}
+function Message (m)
+  if not _nomsg then
+    print(m)
+    msgs[#msgs+1] = string.sub(m, 3, -3)
+  end
+end
+
+assert(os.setlocale"C")
+
+local T,print,format,write,assert,type,unpack,floor =
+      T,print,string.format,io.write,assert,type,table.unpack,math.floor
+
+-- use K for 1000 and M for 1000000 (not 2^10 -- 2^20)
+local function F (m)
+  local function round (m)
+    m = m + 0.04999
+    return format("%.1f", m)      -- keep one decimal digit
+  end
+  if m < 1000 then return m
+  else
+    m = m / 1000
+    if m < 1000 then return round(m).."K"
+    else
+      return round(m/1000).."M"
+    end
+  end
+end
+
+local Cstacklevel
+
+local showmem
+if not T then
+  local max = 0
+  showmem = function ()
+    local m = collectgarbage("count") * 1024
+    max = (m > max) and m or max
+    print(format("    ---- total memory: %s, max memory: %s ----\n",
+          F(m), F(max)))
+  end
+  Cstacklevel = function () return 0 end   -- no info about stack level
+else
+  showmem = function ()
+    T.checkmemory()
+    local total, numblocks, maxmem = T.totalmem()
+    local count = collectgarbage("count")
+    print(format(
+      "\n    ---- total memory: %s (%.0fK), max use: %s,  blocks: %d\n",
+      F(total), count, F(maxmem), numblocks))
+    print(format("\t(strings:  %d, tables: %d, functions: %d, "..
+                 "\n\tudata: %d, threads: %d)",
+                 T.totalmem"string", T.totalmem"table", T.totalmem"function",
+                 T.totalmem"userdata", T.totalmem"thread"))
+  end
+
+  Cstacklevel = function ()
+    local _, _, ncalls = T.stacklevel()
+    return ncalls    -- number of C calls
+  end
+end
+
+
+local Cstack = Cstacklevel()
+
+--
+-- redefine dofile to run files through dump/undump
+--
+local function report (n) print("\n***** FILE '"..n.."'*****") end
+local olddofile = dofile
+local dofile = function (n, strip)
+  showmem()
+  local c = os.clock()
+  print(string.format("time: %g (+%g)", c - initclock, c - las
+assert(f(1,2,'a') == 'a' and g(1,2,'a') == 1 and h(1,2,'a') == 1)
+assert(f(1,2,'a')
+~=          -- force SETLINE before nil
+nil, "")
+assert(f(1,2,'a') == 'a' and g(1,2,'a') == 1 and h(1,2,'a') == 1)
+assert(f(1,2,nil,1,'x') == 'x' and g(1,2,nil,1,'x') == 1 and
+                                   h(1,2,nil,1,'x') == 1)
+assert(f(1,2,nil,nil,'x') == nil and g(1,2,nil,nil,'x') == 0 and
+                                     h(1,2,nil,nil,'x') == 0)
+assert(f(1,2,nil,1,nil) == nil and g(1,2,nil,1,nil) == 0 and
+                                   h(1,2,nil,1,nil) == 0)
+
+assert(1 and 2<3 == true and 2<3 and 'a'<'b' == true)
+x = 2<3 and not 3; assert(x==false)
+x = 2<1 or (2>1 and 'a'); assert(x=='a')
+
+
+do
+  local a; if nil then a=1; else a=2; end;    -- this nil comes as PUSHNIL 2
+  assert(a==2)
+end
+
+local function F (a)
+  assert(debug.getinfo(1, "n").name == 'F')
+  return a,2,3
+end
+
+a,b = F(1)~=nil; assert(a == true and b == nil);
+a,b = F(nil)==nil; assert(a == true and b == nil)
+
+----------------------------------------------------------------
+------------------------------------------------------------------
+
+-- sometimes will be 0, sometimes will not...
+_ENV.GLOB1 = math.random(0, 1)
+
+-- basic expressions with their respective values
+local basiccases = {
+  {"nil", nil},
+  {"false", false},
+  {"true", true},
+  {"10", 10},
+  {"(0==_ENV.GLOB1)", 0 == _ENV.GLOB1},
+}
+
+local prog
+
+if _ENV.GLOB1 == 0 then
+  basiccases[2][1] = "F"   -- constant false
+
+  prog = [[
+    local F <const> = false
+    if %s then IX = true end
+    return %s
+]]
+else
+  basiccases[4][1] = "k10"   -- constant 10
+
+  prog = [[
+    local k10 <const> = 10
+    if %s then IX = true end
+    return %s
+  ]]
+end
+
+print('testing short-circuit optimizations (' .. _ENV.GLOB1 .. ')')
+
+
+-- operators with their respective values
+local binops <const> = {
+  {" and ", function (a,b) if not a then return a else return b end end},
+  {" or ", function (a,b) if a then return a else return b end end},
+}
+
+local cases <const> = {}
+
+-- creates all combinations of '(cases[i] op cases[n-i])' plus
+-- 'not(cases[i] op cases[n-i])' (syntax + value)
+local function createcases (n)
+  local res = {}
+  for i = 1, n - 1 do
+    for _, v1 in ipairs(cases[i]) do
+      for _, v2 in ipairs(cases[n - i]) do
+        for _, op in ipairs(binops) do
+            local t = {
+              "(" .. v1[1] .. op[1] .. v2[1] .. ")",
+              op[2](v1[2], v2[2])
+            }
+            res[#res + 1] = t
+            res[#res + 1] = {"not" .. t[1], not t[2]}
+        end
+      end
+    end
+  end
+  return res
+end
+
+-- do not do too many combinations for soft tests
+local level = _soft and 3 or 4
+
+cases[1] = basiccases
+for i = 2, level do cases[i] = createcases(i) end
+print("+")
+
+local i = 0
+for n = 1, level do
+  for _, v in pairs(cases[n]) do
+    local s = v[1]
+    local p = load(string.format(prog, s, s), "")
+    IX = false
+    assert(p() == v[2] and IX == not not v[2])
+    i = i + 1
+    if i % 60000 == 0 then print('+') end
+  end
+end
+IX = nil
+_G.GLOB1 = nil
+------------------------------------------------------------------
+
+-- testing some syntax errors (chosen through 'gcov')
+checkload("for x do", "expected")
+checkload("x:call", "expected")
+
+print'OK'

@@ -1,0 +1,63 @@
+-- $Id: testes/vararg.lua $
+-- See Copyright Notice in file all.lua
+
+print('testing vararg')
+
+local function f (a, ...)
+  local x = {n = select('#', ...), ...}
+  for i = 1, x.n do assert(a[i] == x[i]) end
+  return x.n
+end
+
+local function c12 (...)
+  assert(arg == _G.arg)    -- no local 'arg'
+  local x = {...}; x.n = #x
+  local res = (x.n==2 and x[1] == 1 and x[2] == 2)
+  if res then res = 55 end
+  return res, 2
+end
+
+local function vararg (...) return {n = select('#', ...), ...} end
+
+local call = function (f, args) return f(table.unpack(args, 1, args.n)) end
+
+assert(f() == 0)
+assert(f({1,2,3}, 1, 2, 3) == 3)
+assert(f({"alo", nil, 45, f, nil}, "alo", nil, 45, f, nil) == 5)
+
+assert(vararg().n == 0)
+assert(vararg(nil, nil).n == 2)
+
+assert(c12(1,2)==55)
+local a,b = assert(call(c12, {1,2}))
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=2})
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=1})
+assert(not a)
+assert(c12(1,2,3) == false)
+local a = vararg(call(next, {_G,nil;n=2}$
+  for i=30026,50009 do
+    io.write('b', i, ' = ', sig(i), 15013+((i-30026)/2), ',\n')
+  end
+end,
+
+function ()   -- $3$
+  for i=10,50009 do
+    io.write('"a', i, '", ', sig(i), 5+((i-10)/2), ',\n')
+  end
+end,
+}
+
+local file = os.tmpname()
+io.output(file)
+for s in string.gmatch(prog, "$([^$]+)") do
+  local n = tonumber(s)
+  if not n then io.write(s) else F[n]() end
+end
+io.close()
+local result = dofile(file)
+assert(os.remove(file))
+print'OK'
+return result
+

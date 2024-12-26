@@ -1,0 +1,226 @@
+-- $Id: testes/vararg.lua $
+-- See Copyright Notice in file all.lua
+
+print('testing vararg')
+
+local function f (a, ...)
+  local x = {n = select('#', ...), ...}
+  for i = 1, x.n do assert(a[i] == x[i]) end
+  return x.n
+end
+
+local function c12 (...)
+  assert(arg == _G.arg)    -- no local 'arg'
+  local x = {...}; x.n = #x
+  local res = (x.n==2 and x[1] == 1 and x[2] == 2)
+  if res then res = 55 end
+  return res, 2
+end
+
+local function vararg (...) return {n = select('#', ...), ...} end
+
+local call = function (f, args) return f(table.unpack(args, 1, args.n)) end
+
+assert(f() == 0)
+assert(f({1,2,3}, 1, 2, 3) == 3)
+assert(f({"alo", nil, 45, f, nil}, "alo", nil, 45, f, nil) == 5)
+
+assert(vararg().n == 0)
+assert(vararg(nil, nil).n == 2)
+
+assert(c12(1,2)==55)
+local a,b = assert(call(c12, {1,2}))
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=2})
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=1})
+assert(not a)
+assert(c12(1,2,3) == false)
+local a = vararg(call(next, {_G,nil;n=2}))
+local b,c = next(_G)
+assert(a[1] == b and a[2] == c and a.n == 2)
+a = vararg(call(call, {c12, {1,2}}))
+assert(a.n == 2 and a[1] == 55 and a[2] == 2)
+a = call(print, {'+'})
+assert(a == nil)
+
+local t = {1, 10}
+function t:f (...) local arg = {...}; return self[...]+#arg end
+assert(t:f(1,4) == 3 and t:f(2) == 11)
+print('+')
+
+local lim = 20
+local i, a = 1, {}
+while i <= lim do a[i] = i+0.3; i=i+1 end
+
+function f(a, b, c, d, ...)
+  local more = {...}
+  assert(a == 1.3 and more[1] == 5.3 and
+         more[lim-4] == lim+0.3 and not more[lim-3])
+end
+
+local function g (a,b,c)
+  assert(a == 1.3 and b == 2.3 and c == 3.3)
+end
+
+call(f, a)
+call(g, a)
+
+a = {}
+i = 1
+while i <= lim do a[i] = i; i=i+1 end
+assert(call(math.max, a) == lim)
+
+print("+")
+
+
+-- new-style varargs
+
+local function oneless (a, ...) return ... end
+
+function f (n, a, ...)
+  local b
+  assert(arg == _G.arg)   -- no local 'arg'
+  if n == 0 then
+    local b, c, d = ...
+    return a, b, c, d, oneless(oneless(oneless(...)))
+  else
+    n, b, a = n-1, ..., a
+    assert(b == ...)
+    return f(n, a, ...)
+  end
+end
+
+a,b,c,d,e = assert(f(10,5,4,3,2,1))
+assert(a==5 and b==4 and c==3 and d==2 and e==1)
+
+a,b,c,d,e = f(4)
+assert(a==nil and b==nil and c==nil and d==nil and e==nil)
+
+
+-- varargs for main chtesting vararg')
+
+local function f (a, ...)
+  local x = {n = select('#', ...), ...}
+  for i = 1, x.n do assert(a[i] == x[i]) end
+  return x.n
+end
+
+local function c12 (...)
+  assert(arg == _G.arg)    -- no local 'arg'
+  local x = {...}; x.n = #x
+  local res = (x.n==2 and x[1] == 1 and x[2] == 2)
+  if res then res = 55 end
+  return res, 2
+end
+
+local function vararg (...) return {n = select('#', ...), ...} end
+
+local call = function (f, args) return f(table.unpack(args, 1, args.n)) end
+
+assert(f() == 0)
+assert(f({1,2,3}, 1, 2, 3) == 3)
+assert(f({"alo", nil, 45, f, nil}, "alo", nil, 45, f, nil) == 5)
+
+assert(vararg().n == 0)
+assert(vararg(nil, nil).n == 2)
+
+assert(c12(1,2)==55)
+local a,b = assert(call(c12, {1,2}))
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=2})
+assert(a == 55 and b == 2)
+a = call(c12, {1,2;n=1})--------------------------------------
+------------------------------------------------------------------
+
+-- sometimes will be 0, sometimes will not...
+_ENV.GLOB1 = math.random(0, 1)
+
+-- basic expressions with their respective values
+local basiccases = {
+  {"nil", nil},
+  {"false", false},
+  {"true", true},
+  {"10", 10},
+  {"(0==_ENV.GLOB1)", 0 == _ENV.GLOB1},
+}
+
+local prog
+
+if _ENV.GLOB1 == 0 then
+  basiccases[2][1] = "F"   -- constant false
+
+  prog = [[
+    local F <const> = false
+    if %s then IX = true end
+    return %s
+]]
+else
+  basiccases[4][1] = "k10"   -- constant 10
+
+  prog = [[
+    local k10 <const> = 10
+    if %s then IX = true end
+    return %s
+  ]]
+end
+
+print('testing short-circuit optimizations (' .. _ENV.GLOB1 .. ')')
+
+
+-- operators with their respective values
+local binops <const> = {
+  {" and ", function (a,b) if not a then return a else return b end end},
+  {" or ", function (a,b) if a then return a else return b end end},
+}
+
+local cases <const> = {}
+
+-- creates all combinations of '(cases[i] op cases[n-i])' plus
+-- 'not(cases[i] op cases[n-i])' (syntax + value)
+local function createcases (n)
+  local res = {}
+  for i = 1, n - 1 do
+    for _, v1 in ipairs(cases[i]) do
+      for _, v2 in ipairs(cases[n - i]) do
+        for _, op in ipairs(binops) do
+            local t = {
+              "(" .. v1[1] .. op[1] .. v2[1] .. ")",
+              op[2](v1[2], v2[2])
+            }
+            res[#res + 1] = t
+            res[#res + 1] = {"not" .. t[1], not t[2]}
+        end
+      end
+    end
+  end
+  return res
+end
+
+-- do not do too many combinations for soft tests
+local level = _soft and 3 or 4
+
+cases[1] = basiccases
+for i = 2, level do cases[i] = createcases(i) end
+print("+")
+
+local i = 0
+for n = 1, level do
+  for _, v in pairs(cases[n]) do
+    local s = v[1]
+    local p = load(string.format(prog, s, s), "")
+    IX = false
+    assert(p() == v[2] and IX == not not v[2])
+    i = i + 1
+    if i % 60000 == 0 then print('+') end
+  end
+end
+IX = nil
+_G.GLOB1 = nil
+------------------------------------------------------------------
+
+-- testing some syntax errors (chosen through 'gcov')
+checkload("for x do", "expected")
+checkload("x:call", "expected")
+
+print'OK'

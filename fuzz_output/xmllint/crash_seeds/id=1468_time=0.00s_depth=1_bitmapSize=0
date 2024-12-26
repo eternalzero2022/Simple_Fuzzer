@@ -1,0 +1,3 @@
+<?xml
+   <xinclude:include href="../ents/something.xml#xpointer(//p)"/>
+</x>

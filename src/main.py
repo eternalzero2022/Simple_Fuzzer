@@ -145,7 +145,7 @@ def main(args):
 
         print(f"种子队列长度：",len(fuzz.seed_queue))
 
-        if len(fuzz.seed_queue == 0):
+        if len(fuzz.seed_queue) == 0:
             print("错误：没有可执行的初始种子。程序自动退出")
             if fuzz.shm is not None:
                 fuzz.shm.remove()

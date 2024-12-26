@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="http://www.ietf.org/standards/dav/">
+  <d:response>
+    <d:href>http://www.foo.bar/container/resource1</d:href>
+    <d:href>http://www.foo.bar/container/resource2</d:href>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  ITY ent1 "<elem/>">
+  <!ENTITY ent2 "<ns:elem/>">
+]>
+<doc>
+    <a xmlns="urn:a">&ent1;</a>
+    <b xmlns="urn:b">&ent1;</b>
+    <a xmlns:ns="urn:a">&ent2;</a>
+    <b xmlns:ns="urn:b">&ent2;</b>
+</doc>

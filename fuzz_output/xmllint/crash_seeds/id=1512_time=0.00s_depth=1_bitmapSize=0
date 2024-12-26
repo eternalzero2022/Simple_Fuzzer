@@ -1,0 +1,6 @@
+<!DOCTYPE x [
+<!ELEMENT x (test*)>
+!ENTITY ampproblem '&amp;'>
+]>
+<t a="&ampproblem;">a</t>
+

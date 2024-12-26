@@ -1,0 +1,775 @@
+-- $Id: testes/code.lua $
+-- See Copyright Notice in file all.lua
+
+if T==nil then
+  (Message or print)('\n >>> testC not active: skipping opcode tests <<<\n')
+  return
+end
+print "testing code generation and optimizations"
+
+-- to test constant propagation
+local k0aux <const> = 0
+local k0 <const> = k0aux
+local k1 <const> = 1
+local k3 <const> = 3
+local k6 <const> = k3 + (k3 << k0)
+local kFF0 <const> = 0xFF0
+local k3_78 <const> = 3.78
+local x, k3_78_4 <const> = 10, k3_78 / 4
+assert(x == 10)
+
+local kx <const> = "x"
+
+local kTrue <const> = true
+local kFalse <const> = false
+
+local kNil <const> = nil
+
+-- this code gave an error for the code checker
+do
+  local function f (a)
+  for k,v,w in a do end
+  end
+end
+
+
+-- testing reuse in constant table
+local function checkKlist (func, list)
+  local k = T.listk(func)
+  assert(#k == #list)
+  for i = 1, #k do
+    assert(k[i] == list[i] and math.type(k[i]) == math.type(list[i]))
+  end
+end
+
+local function foo ()
+  local a
+  a = k3;
+  a = 0; a = 0.0; a = -7 + 7
+  a = k3_78/4; a = k3_78_4
+  a = -k3_78/4; a = k3_78/4; a = -3.78/4
+  a = -3.79/4; a = 0.0; a = -0;
+  a = k3; a = 3.0; a = 3; a = 3.0
+end
+
+checkKlist(foo, {3.78/4, -3.78/4, -3.79/4})
+
+
+foo = function (f, a)
+        f(100 * 1000)
+        f(100.0 * 1000)
+        f(-100 * 1000)
+        f(-100 * 1000.0)
+        f(100000)
+        f(100000.0)
+        f(-100000)
+        f(-100000.0)
+      end
+
+checkKlist(foo, {100000, 100000.0, -100000, -100000.0})
+
+
+-- floats x integers
+foo = function (t, a)
+  t[a] = 1; t[a] = 1.0
+  t[a] = 1; t[a] = 1.0
+  t[a] = 2; t[a] = 2.0
+  t[a] = 0; t[a] = 0.0
+  t[a] = 1; t[a] = 1.0
+  t[a] = 2; t[a] = 2.0
+  t[a] = 0; t[a] = 0.0
+end
+
+checkKlist(foo, {1, 1.0, 2, 2.0, 0, 0.0})
+
+
+-- testing opcodes
+
+-- check that 'f' opcodes match '...'
+local function check (f, ...)
+  local arg = {...}
+  local c = T.listcode(f)
+  for i=1, #arg do
+    local opcode = string.match(c[i], "%u%w+")
+    -- print(arg[i], opcode)
+    assert(arg[i] == opcode)
+  end
+  assert(c[#arg+2] == undef)
+end
+
+
+-- check that 'f' opcodes match '...' and that 'f(p) == r'.
+local function checkR (f, p, r, ...)
+  local r1 = f(p)
+  assert(r == r1 and math.type(r) == math.type(r1))
+  check(f, ...)
+end
+
+
+-- check that 'a' and 'b' has the same opcodes
+local function checkequal (a, b)
+  a = T.listcode(a)
+  b = T.listcode(b)
+  assert(#a == #b)
+  for i = 1, #a do
+    a[i] = string.gsub(a[i], '%b()', '')   -- remove line number
+    b[i] = string.gsub(b[i], '%b()', '')   -- remove line number
+    assert(a[i] == b[i])
+  end
+end
+
+
+-- some basic instructions
+check(function ()   -- function does not create upvalues
+  (function () end){f()}
+end, 'CLOSURE', 'NEWTABLE', 'EXTRAARG', 'GETTABUP', 'CALL',
+     'SETLIST', 'CALL', 'RETURN0')
+
+check(function (x)   -- function creates upvalues
+  (function () return x end){f()}
+end, 'CLOSURE', 'NEWTABLE', 'EXTRAARG', 'GETTABUP', 'CALL',
+     'SETLIST', 'CALL', 'RETURN')
+
+
+-- sequence of LOADNILs
+check(function ()
+  local kNil <const> = nil
+  local a,b,c
+  local d; local e;
+  local f,g,h;
+  d = nil; d=nil; b=nil; a=kNil; c=nil;
+end, 'LOADNIL', 'RETURN0')
+
+check(function ()
+  local a,b,c,d = 1,1,1,1
+  d=nil;c=nil;b=nil;a=nil
+end, 'LOADI', 'LOADI', 'LOADI', 'LOADI', 'LOADNIL', 'RETURN0')
+
+do
+  local a,b,c,d = 1,1,1,1
+  d=nil;c=nil;b=nil;a=nil
+  assert(a == nil and b == nil and c == nil and d == nil)
+end
+
+
+-- single return
+check (function (a,b,c) return a end, 'RETURN1')
+
+
+-- infinite loops
+check(function () while kTrue do local a = -1 end end,
+'LOADI', 'JMP', 'RETURN0')
+
+check(function () while 1 do local a = -1 end end,
+'LOADI', 'JMP', 'RETURN0')
+
+check(function () repeat local x = 1 until true end,
+'LOADI', 'RETURN0')
+
+
+-- concat optimization
+check(function (a,b,c,d) return a..b..c..d end,
+  'MOVE', 'MOVE', 'MOVE', 'MOVE', 'CONCAT', 'RETURN1')
+
+-- not
+check(function () return not not nil end, 'LOADFALSE', 'RETURN1')
+check(function () return not not kFalse end, 'LOADFALSE', 'RETURN1')
+check(function () return not not true end, 'LOADTRUE', 'RETURN1')
+check(function () return not not k3 end, 'LOADTRUE', 'RETURN1')
+
+-- direct access to locals
+check(function ()
+  local a,b,c,d
+  a = b*a
+  c.x, a[b] = -((a + d/b - a[b]) ^ a.x), b
+end,
+  'LOADNIL',
+  'MUL', 'MMBIN',
+  'DIV', 'MMBIN', 'ADD', 'MMBIN', 'GETTABLE', 'SUB', 'MMBIN',
+  'GETFIELD', 'POW', 'MMBIN', 'UNM', 'SETTABLE', 'SETFIELD', 'RETURN0')
+
+
+-- direct access to constants
+check(function ()
+  local a,b
+  local c = kNil
+  a[kx] = 3.2
+  a.x = b
+  a[b] = 'x'
+end,
+  'LOADNIL', 'SETFIELD', 'SETFIELD', 'SETTABLE', 'RETURN0')
+
+-- "get/set table" with numeric indices
+check(function (a)
+  local k255 <const> = 255
+  a[1] = a[100]
+  a[k255] = a[256]
+  a[256] = 5
+end,
+  'GETI', 'SETI',
+  'LOADI', 'GETTABLE', 'SETI',
+  'LOADI', 'SETTABLE',  'RETURN0')
+
+check(function ()
+  local a,b
+  a = a - a
+  b = a/a
+  b = 5-4
+end,
+  'LOADNIL', 'SUB', 'MMBIN', 'DIV', 'MMBIN', 'LOADI', 'RETURN0')
+
+check(function ()
+  local a,b
+  a[kTrue] = false
+end,
+  'LOADNIL', 'LOADTRUE', 'SETTABLE', 'RETURN0')
+
+
+-- equalities
+checkR(function (a) if a == 1 then return 2 end end, 1, 2,
+  'EQI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if -4.0 == a then return 2 end end, -4, 2,
+  'EQI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if a == "hi" then return 2 end end, 10, nil,
+  'EQK', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if a == 10000 then return 2 end end, 1, nil,
+  'EQK', 'JMP', 'LOADI', 'RETURN1')   -- number too large
+
+checkR(function (a) if -10000 == a then return 2 end end, -10000, 2,
+  'EQK', 'JMP', 'LOADI', 'RETURN1')   -- number too large
+
+-- comparisons
+
+checkR(function (a) if -10 <= a then return 2 end end, -10, 2,
+  'GEI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if 128.0 > a then return 2 end end, 129, nil,
+  'LTI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if -127.0 < a then return 2 end end, -127, nil,
+  'GTI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if 10 < a then return 2 end end, 11, 2,
+  'GTI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if 129 < a then return 2 end end, 130, 2,
+  'LOADI', 'LT', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if a >= 23.0 then return 2 end end, 25, 2,
+  'GEI', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if a >= 23.1 then return 2 end end, 0, nil,
+  'LOADK', 'LE', 'JMP', 'LOADI', 'RETURN1')
+
+checkR(function (a) if a > 2300.0 then return 2 end end, 0, nil,
+  'LOADF', 'LT', 'JMP', 'LOADI', 'RETURN1')
+
+
+-- constant folding
+local function checkK (func, val)
+  check(func, 'LOADK', 'RETURN1')
+  checkKlist(func, {val})
+  assert(func() == val)
+end
+
+local function checkI (func, val)
+  check(func, 'LOADI', 'RETURN1')
+  checkKlist(func, {})
+  assert(func() == val)
+end
+
+local function checkF (func, val)
+  check(func, 'LOADF', 'RETURN1')
+  checkKlist(func, {})
+  assert(func() == val)
+end
+
+checkF(function () return 0.0 end, 0.0)
+checkI(function () return k0 end, 0)
+checkI(function () return -k0//1 end, 0)
+checkK(function () return 3^-1 end, 1/3)
+checkK(function () return (1 + 1)^(50 + 50) end, 2^100)
+checkK(function () return (-2)^(31 - 2) end, -0x20000000 + 0.0)
+checkF(function () return (-k3^0 + 5) // 3.0 end, 1.0)
+checkI(function () return -k3 % 5 end, 2)
+checkF(function () return -((2.0^8 + -(-1)) % 8)/2 * 4 - 3 end, -5.0)
+checkF(function () return -((2^8 + -(-1)) % 8)//2 * 4 - 3 end, -7.0)
+checkI(function () return 0xF0.0 | 0xCC.0 ~ 0xAA & 0xFD end, 0xF4)
+checkI(function () return ~(~kFF0 | kFF0) end, 0)
+checkI(function () return ~~-1024.0 end, -1024)
+checkI(function () return ((100 << k6) << -4) >> 2 end, 100)
+
+-- borders around MAXARG_sBx ((((1 << 17) - 1) >> 1) == 65535)
+local a = 17; local sbx = ((1 << a) - 1) >> 1   -- avoid folding
+local border <const> = 65535
+checkI(function () return border end, sbx)
+checkI(function () return -border end, -sbx)
+checkI(function () return border + 1 end, sbx + 1)
+checkK(function () return border + 2 end, sbx + 2)
+checkK(function () return -(border + 1) end, -(sbx + 1))
+
+local border <const> = 65535.0
+checkF(function () return border end, sbx + 0.0)
+checkF(function () return -border end, -sbx + 0.0)
+checkF(function () return border + 1 end, (sbx + 1.0))
+checkK(function () return border + 2 end, (sbx + 2.0))
+checkK(function () return -(border + 1) end, -(sbx + 1.0))
+
+
+-- immediate operands
+checkR(function (x) return x + k1 end, 10, 11, 'ADDI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x - 127 end, 10, -117, 'ADDI', 'MMBINI', 'RETURN1')
+checkR(function (x) return 128 + x end, 0.0, 128.0,
+         'ADDI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x * -127 end, -1.0, 127.0,
+         'MULK', 'MMBINK', 'RETURN1')
+checkR(function (x) return 20 * x end, 2, 40, 'MULK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x ^ -2 end, 2, 0.25, 'POWK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x / 40 end, 40, 1.0, 'DIVK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x // 1 end, 10.0, 10.0,
+         'IDIVK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x % (100 - 10) end, 91, 1,
+         'MODK', 'MMBINK', 'RETURN1')
+checkR(function (x) return k1 << x end, 3, 8, 'SHLI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x << 127 end, 10, 0, 'SHRI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x << -127 end, 10, 0, 'SHRI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x >> 128 end, 8, 0, 'SHRI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x >> -127 end, 8, 0, 'SHRI', 'MMBINI', 'RETURN1')
+checkR(function (x) return x & 1 end, 9, 1, 'BANDK', 'MMBINK', 'RETURN1')
+checkR(function (x) return 10 | x end, 1, 11, 'BORK', 'MMBINK', 'RETURN1')
+checkR(function (x) return -10 ~ x end, -1, 9, 'BXORK', 'MMBINK', 'RETURN1')
+
+-- K operands in arithmetic operations
+checkR(function (x) return x + 0.0 end, 1, 1.0, 'ADDK', 'MMBINK', 'RETURN1')
+--  check(function (x) return 128 + x end, 'ADDK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x * -10000 end, 2, -20000,
+         'MULK', 'MMBINK', 'RETURN1')
+--  check(function (x) return 20 * x end, 'MULK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x ^ 0.5 end, 4, 2.0, 'POWK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x / 2.0 end, 4, 2.0, 'DIVK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x // 10000 end, 10000, 1,
+         'IDIVK', 'MMBINK', 'RETURN1')
+checkR(function (x) return x % (100.0 - 10) end, 91, 1.0,
+         'MODK', 'MMBINK', 'RETURN1')
+
+-- no foldings (and immediate operands)
+check(function () return -0.0 end, 'LOADF', 'UNM', 'RETURN1')
+check(function () return k3/0 end, 'LOADI', 'DIVK', 'MMBINK', 'RETURN1')
+check(function () return 0%0 end, 'LOADI', 'MODK', 'MMBINK', 'RETURN1')
+check(function () return -4//0 end, 'LOADI', 'IDIVK', 'MMBINK', 'RETURN1')
+check(function (x) return x >> 2.0 end, 'LOADF', 'SHR', 'MMBIN', 'RETURN1')
+check(function (x) return x << 128 end, 'LOADI', 'SHL', 'MMBIN', 'RETURN1')
+check(function (x) return x & 2.0 end, 'LOADF', 'BAND', 'MMBIN', 'RETURN1')
+
+-- basic 'for' loops
+check(function () for i = -10, 10.5 do end end,
+'LOADI', 'LOADK', 'LOADI', 'FORPREP', 'FORLOOP', 'RETURN0')
+check(function () for i = 0xfffffff, 10.0, 1 do end end,
+'LOADK', 'LOADF', 'LOADI', 'FORPREP', 'FORLOOP', 'RETURN0')
+
+-- bug in constant folding for 5.1
+check(function () return -nil end, 'LOADNIL', 'UNM', 'RETURN1')
+
+
+check(function ()
+  local a,b,c
+  b[c], a = c, b
+  b[a], a = c, b
+  a, b = c, a
+  a = a
+end,
+  'LOADNIL',
+  'MOVE', 'MOVE', 'SETTABLE',
+  'MOVE', 'MOVE', 'MOVE', 'SETTABLE',
+  'MOVE', 'MOVE', 'MOVE',
+  -- no code for a = a
+  'RETURN0')
+
+
+-- x == nil , x ~= nil
+-- checkequal(function (b) if (a==nil) then a=1 end; if a~=nil then a=1 end end,
+--            function () if (a==9) then a=1 end; if a~=9 then a=1 end end)
+
+-- check(function () if a==nil then a='a' end end,
+-- 'GETTABUP', 'EQ', 'JMP', 'SETTABUP', 'RETURN')
+
+do   -- tests for table access in upvalues
+  local t
+  check(function () t[kx] = t.y end, 'GETTABUP', 'SETTABUP')
+  check(function (a) t[a()] = t[a()] end,
+  'MOVE', 'CALL', 'GETUPVAL', 'MOVE', 'CALL',
+  'GETUPVAL', 'GETTABLE', 'SETTABLE')
+end
+
+-- de morgan
+checkequal(function () local a; if not (a or b) then b=a end end,
+           function () local a; if (not a and not b) then b=a end end)
+
+checkequal(function (l) local a; return 0 <= a and a <= l end,
+           function (l) local a; return not (not(a >= 0) or not(a <= l)) end)
+
+
+-- if-break optimizations
+check(function (a, b)
+        while a do
+  
+  end
+
+  do     -- short strings are internalized
+    local s1 = string.rep("a", 10)
+    local s2 = string.rep("aa", 5)
+  assert(topointer(s1) == topointer(s2))
+  end
+
+  do     -- long strings aren't internalized
+    local s1 = string.rep("a", 300); local s2 = string.rep("a", 300)
+    assert(topointer(s1) ~= topointer(s2))
+  end
+end
+
+local x = '"ílo"\n\\'
+assert(string.format('%q%s', x, x) == '"\\"ílo\\"\\\n\\\\""ílo"\n\\')
+assert(string.format('%q', "\0") == [["\0"]])
+assert(load(string.format('return %q', x))() == x)
+x = "\0\1\0023\5\0009"
+assert(load(string.format('return %q', x))() == x)
+assert(string.format("\0%c\0%c%x\0", string.byte("\xe4"), string.byte("b"), 140) ==
+              "\0\xe4\0b8c\0")
+assert(string.format('') == "")
+assert(string.format("%c",34)..string.format("%c",48)..string.format("%c",90)..string.format("%c",100) ==
+       string.format("%1c%-c%-1c%c", 34, 48, 90, 100))
+assert(string.format("%s\0 is not \0%s", 'not be', 'be') == 'not be\0 is not \0be')
+assert(string.format("%%%d %010d", 10, 23) == "%10 0000000023")
+assert(tonumber(string.format("%f", 10.3)) == 10.3)
+assert(string.format('"%-50s"', 'a') == '"a' .. string.rep(' ', 49) .. '"')
+
+assert(string.format("-%.20s.20s", string.rep("%", 2000)) ==
+                     "-"..string.rep("%", 20)..".20s")
+assert(string.format('"-%20s.20s"', string.rep("%", 2000)) ==
+       string.format("%q", "-"..string.rep("%", 2000)..".20s"))
+
+do
+  local function checkQ (v)
+    local s = string.format("%q", v)
+    local nv = load("return " .. s)()
+    assert(v == nv and math.type(v) == math.type(nv))
+  end
+  checkQ("\0\0\1\255\u{234}")
+  checkQ(math.maxinteger)
+  checkQ(math.mininteger)
+  checkQ(math.pi)
+  checkQ(0.1)
+  checkQ(true)
+  checkQ(nil)
+  checkQ(false)
+  checkQ(math.huge)
+  checkQ(-math.huge)
+  assert(string.format("%q", 0/0) == "(0/0)")   -- NaN
+  checkerror("no literal", string.format, "%q", {})
+end
+
+assert(string.format("\0%s\0", "\0\0\1") == "\0\0\0\1\0")
+checkerror("contains zeros", string.format, "%10s", "\0")
+
+-- format x tostring
+assert(string.format("%s %s", nil, true) == "nil true")
+assert(string.format("%s %.4s", false, true) == "false true")
+assert(string.format("%.3s %.3s", false, true) == "fal tru")
+local m = setmetatable({}, {__tostring = function () return "hello" end,
+                            __name = "hi"})
+assert(string.format("%s %.10s", m, m) == "hello hello")
+getmetatable(m).__tostring = nil   -- will use '__name' from now on
+assert(string.format("%.4s", m) == "hi: ")
+
+getmetatable(m).__tostring = function () return {} end
+checkerror("'__tostring' must return a string", tostring, m)
+
+
+assert(string.format("%x", 0.0) == "0")
+assert(string.format("%02x", 0.0) == "00")
+assert(string.format("%08X", 0xFFFFFFFF) == "FFFFFFFF")
+assert(string.format("%+08d", 31501) == "+0031501")
+assert(string.format("%+08d", -30927) == "-0030927")
+
+
+do    -- longest number that can be formatted
+  local i = 1
+  local j = 10000
+  while i + 1 < j do   -- binary search for maximum finite float
+    local m = (i + j) // 2
+    if 10^m < math.huge then i = m else j = m end
+  end
+  assert(10^i < math.huge and 10^j == math.huge)
+  local s = string.format('%.99f', -(10^i))
+  assert(string.len(s) >= i + 101)
+  assert(tonumber(s) == -(10^i))
+
+  -- limit for floats
+  assert(10^38 < math.huge)
+  local s = string.format('%.99f', -(10^38))
+  assert(string.len(s) >= 38 + 101)
+  assert(tonumber(s) == -(10^38))
+end
+
+
+-- testing large numbers for format
+do   -- assume at least 32 bits
+  local max, min = 0x7fffffff, -0x80000000    -- "large" for 32 bits
+  assert(string.sub(string.format("%8x", -1), -8) == "ffffffff")
+  assert(string.format("%x", max) == "7fffffff")
+  assert(string.sub(string.format("%x", min), -8) == "80000000")
+  assert(string.format("%d", max) ==  "2147483647")
+  assert(string.format("%d", min) == "-2147483648")
+  assert(string.format("%u", 0xffffffff) == "4294967295")
+  assert(string.format("%o", 0xABCD) == "125715")
+
+  max, min = 0x7fffffffffffffff, -0x8000000000000000
+  if max > 2.0^53 then  -- only for 64 bits
+    assert(string.format("%x", (2^52 | 0) - 1) == "fffffffffffff")
+    assert(string.format("0x%8X", 0x8f000003) == "0x8F000003")
+    assert(string.format("%d", 2^53) == "9007199254740992")
+    assert(string.format("%i", -2^53) == "-9007199254740992")
+    assert(string.format("%x", max) == "7fffffffffffffff")
+    assert(string.format("%x", min) == "8000000000000000")
+    assert(string.format("%d", max) ==  "9223372036854775807")
+    assert(string.format("%d", min) == "-9223372036854775808")
+    assert(string.format("%u", ~(-1 << 64)) == "18446744073709551615")
+    assert(tostring(1234567890123) == '1234567890123')
+  end
+end
+
+
+do print("testing 'format %a %A'")
+  local function matchhexa (n)
+    local s = string.format("%a", n)
+    -- result matches ISO C requirements
+    assert(string.find(s, "^%-?0x[1-9a-f]%.?[0-9a-f]*p[-+]?%d+$"))
+    assert(tonumber(s) == n)  -- and has full precision
+    s = string.format("%A", n)
+    assert(string.find(s, "^%-?0X[1-9A-F]%.?[0-9A-F]*P[-+]?%d+$"))
+    assert(tonumber(s) == n)
+  end
+  for _, n in ipairs{0.1, -0.1, 1/3, -1/3, 1e30, -1e30,
+                     -45/247, 1, -1, 2, -2, 3e-20, -3e-20} do
+    matchhexa(n)
+  end
+
+  assert(string.find(string.format("%A", 0.0), "^0X0%.?0*P%+?0$"))
+  assert(string.find(string.format("%a", -0.0), "^%-0x0%.?0*p%+?0$"))
+
+  if not _port then   -- test inf, -inf, NaN, and -0.0
+    assert(string.find(string.format("%a", 1/0), "^inf"))
+    assert(string.find(string.format("%A", -1/0), "^%-INF"))
+    assert(string.find(string.format("%a", 0/0), "^%-?nan"))
+    assert(string.find(string.format("%a", -0.0), "^%-0x0"))
+  end
+  
+  if not pcall(string.format, "%.3a", 0) then
+    (Message or print)("\n >>> modifiers for format '%a' not available <<<\n")
+  else
+    assert(string.find(string.format("%+.2A", 12), "^%+0X%x%.%x0P%+?%d$"))
+    assert(string.find(string.format("%.4A", -12), "^%-0X%x%.%x000P%+?%d$"))
+  end
+end
+
+
+-- testing some flags  (all these results are required by ISO C)
+assert(string.format("%#12o", 10) == "         012")
+assert(string.format("%#10x", 100) == "      0x64")
+assert(string.format("%#-17X", 100) == "0X64             ")
+assert(string.format("%013i", -100) == "-000000000100")
+assert(string.format("%2.5d", -100) == "-00100")
+assert(string.format("%.u", 0) == "")
+assert(string.format("%+#014.0f", 100) == "+000000000100.")
+assert(string.format("%-16c", 97) == "a               ")
+assert(string.format("%+.3G", 1.5) == "+1.5")
+assert(string.format("%.0s", "alo")  == "")
+assert(string.format("%.s", "alo")  == "")
+
+-- ISO C89 says that "The exponent always contains at least two digits",
+-- but unlike ISO C99 it does not ensure that it contains "only as many
+-- more digits as necessary".
+assert(string.match(string.format("% 1.0E", 100), "^ 1E%+0+2$"))
+assert(string.match(string.format("% .1g", 2^10), "^ 1e%+0+3$"))
+
+
+-- errors in format
+
+local function check (fmt, msg)
+  checkerror(msg, string.format, fmt, 10)
+end
+
+local aux = string.rep('0', 600)
+check("%100.3d", "invalid conversion")
+check("%1"..aux..".3d", "too long")
+check("%1.100d", "invalid conversion")
+check("%10.1"..aux.."004d", "too long")
+check("%t", "invalid conversion")
+check("%"..aux.."d", "too long")
+check("%d %d", "no value")
+check("%010c", "invalid conversion")
+check("%.10c", "invalid conversion")
+check("%0.34s", "invalid conversion")
+check("%#i", "invalid conversion")
+check("%3.1p", "invalid conversion")
+check("%0.s", "invalid conversion")
+check("%10q", "cannot have modifiers")
+check("%F", "invalid conversion")   -- useless and not in C89
+
+
+assert(load("return 1\n--comment without ending EOL")() == 1)
+
+
+checkerror("table expected", table.concat, 3)
+checkerror("at index " .. maxi, table.concat, {}, " ", maxi, maxi)
+-- '%' escapes following minus signal
+checkerror("at index %" .. mini, table.concat, {}, " ", mini, mini)
+assert(table.concat{} == "")
+assert(table.concat({}, 'x') == "")
+assert(table.concat({'\0', '\0\1', '\0\1\2'}, '.\0.') == "\0.\0.\0\1.\0.\0\1\2")
+local a = {}; for i=1,300 do a[i] = "xuxu" end
+assert(table.concat(a, "123").."123" == string.rep("xuxu123", 300))
+assert(table.concat(a, "b", 20, 20) == "xuxu")
+assert(table.concat(a, "", 20, 21) == "xuxuxuxu")
+assert(table.concat(a, "x", 22, 21) == "")
+assert(table.concat(a, "3", 299) == "xuxu3xuxu")
+assert(table.concat({}, "x", maxi, maxi - 1) == "")
+assert(table.concat({}, "x", mini + 1, mini) == "")
+assert(table.concat({}, "x", maxi, mini) == "")
+assert(table.concat({[maxi] = "alo"}, "x", maxi, maxi) == "alo")
+assert(table.concat({[maxi] = "alo", [maxi - 1] = "y"}, "-", maxi - 1, maxi)
+       == "y-alo")
+
+assert(not pcall(table.concat, {"a", "b", {}}))
+
+a = {"a","b","c"}
+assert(table.concat(a, ",", 1, 0) == "")
+assert(table.concat(a, ",", 1, 1) == "a")
+assert(table.concat(a, ",", 1, 2) == "a,b")
+assert(table.concat(a, ",", 2) == "b,c")
+assert(table.concat(a, ",", 3) == "c")
+assert(table.concat(a, ",", 4) == "")
+
+if not _port then
+
+  local locales = { "ptb", "pt_BR.iso88591", "ISO-8859-1" }
+  local function trylocale (w)
+    for i = 1, #locales do
+      if os.setlocale(locales[i], w) then
+        print(string.format("'%s' locale set to '%s'", w, locales[i]))
+        return locales[i]
+      end
+    end
+    print(string.format("'%s' locale not found", w))
+    return false
+  end
+
+  if trylocale("collate")  then
+    assert("alo" < "álo" and "álo" < "amo")
+  end
+
+  if trylocale("ctype") then
+    assert(string.gsub("áéíóú", "%a", "x") == "xxxxx")
+    assert(string.gsub("áÁéÉ", "%l", "x") == "xÁxÉ")
+    assert(string.gsub("áÁéÉ", "%u", "x") == "áxéx")
+    assert(string.upper"áÁé{xuxu}ção" == "ÁÁÉ{XUXU}ÇÃO")
+  end
+
+  os.setlocale("C")
+  assert(os.setlocale() == 'C')
+  assert(os.setlocale(nil, "numeric") == 'C')
+
+end
+
+
+-- bug in Lua 5.3.2
+-- 'gmatch' iterator does not work across coroutines
+do
+  local f = string.gmatch("1 2 3 4 5", "%d+")
+  assert(f() == "1")
+  local co = coroutine.wrap(f)
+  assert(co() == "2")
+end
+
+
+if T==nil then
+  (Message or print)
+     ("\n >>> testC not active: skipping 'pushfstring' tests <<<\n")
+else
+
+  print"testing 'pushfstring'"
+
+  -- formats %U, %f, %I already tested elsewhere
+
+  local blen = 200    -- internal buffer length in 'luaO_pushfstring'
+
+  local function callpfs (op, fmt, n)
+    local x = {T.testC("pushfstring" .. op .. "; return *", fmt, n)}
+    -- stack has code, 'fmt', 'n', and result from operation
+    assert(#x == 4)  -- make sure nothing else was left in the stack
+    return x[4]
+  end
+
+  local function testpfs (op, fmt, n)
+    assert(callpfs(op, fmt, n) == string.format(fmt, n))
+  end
+
+  testpfs("I", "", 0)
+  testpfs("I", string.rep("a", blen - 1), 0)
+  testpfs("I", string.rep("a", blen), 0)
+  testpfs("I", string.rep("a", blen + 1), 0)
+
+  local str = string.rep("ab", blen) .. "%d" .. string.rep("d", blen / 2)
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  str = "%d" .. string.rep("cd", blen)
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  str = string.rep("c", blen - 2) .. "%d"
+  testpfs("I", str, 2^14)
+  testpfs("I", str, -2^15)
+
+  for l = 12, 14 do
+    local str1 = string.rep("a", l)
+    for i = 0, 500, 13 do
+      for j = 0, 500, 13 do
+        str = string.rep("a", i) .. "%s" .. string.rep("d", j)
+        testpfs("S", str, str1)
+        testpfs("S", str, str)
+      end
+    end
+  end
+
+  str = "abc %c def"
+  testpfs("I", str, string.byte("A"))
+  testpfs("I", str, 255)
+
+  str = string.rep("a", blen - 1) .. "%p" .. string.rep("cd", blen)
+  testpfs("P", str, {})
+
+  str = string.rep("%%", 3 * blen) .. "%p" .. string.rep("%%", 2 * blen)
+  testpfs("P", str, {})
+end
+
+if T == nil then
+  (Message or print)('\n >>> testC not active: skipping external strings tests <<<\n')
+else
+  print("testing external strings")
+  local x = T.externKstr("hello")   -- external fixed short string
+  assert(x == "hello")
+  local x = T.externstr("hello")   -- external allocated short string
+  assert(x == "hello")
+  x = string.rep("a", 100)   -- long string
+  local y = T.externKstr(x)   -- external fixed long string
+  assert(y == x)
+  local z = T.externstr(x)   -- external allocated long string
+  assert(z == y)
+end
+
+print('OK')
+
